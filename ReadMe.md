@@ -5,8 +5,8 @@ Release date TBC
 Credits:
 
 The Paint War Team
-Andrius
-Domantas
-Laurynas
-Martynas
-Petras
+- Andrius
+- Domantas
+- Laurynas
+- Martynas
+- Petras
