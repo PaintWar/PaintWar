@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paint War</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: grey;
+        }
+        #canvas-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+        }
+        #grid-canvas {
+            display: none;
+            background-color: grey;
+        }
+    </style>
+</head>
+<body>
+    <button id="start-btn" onclick="startGame()">Start game</button>
+    <div id="canvas-container">
+        <canvas id="grid-canvas"></canvas>
+    </div>
+    
+    <script>
+        const CANVAS_WIDTH = 2000;
+        const CANVAS_HEIGHT = 2000;
+        const GRID_SIZE = 50;
+
+        let canvas, context;
+        let cameraX = 0;
+        let cameraY = 0;
+        let cameraSpeed = 10;
+        let edgeThreshold = 50;
+        let mouseX = 0;
+        let mouseY = 0;
+
+        function startGame() {
+            document.getElementById('start-btn').style.display = 'none';
+            enterFullScreen();
+            initGame();
+        }
+
+        // Sets full screen depending on the browser
+        function enterFullScreen() {
+            const element = document.documentElement;
+            document.getElementById('grid-canvas').style.display = 'block';
+            
+            if (element.requestFullscreen)
+                element.requestFullscreen();
+            else if (element.mozRequestFullScreen)
+                element.mozRequestFullScreen();
+            else if (element.webkitRequestFullscreen)
+                element.webkitRequestfullscreen();
+            else if (element.msRequestFullscreen)
+                element.msRequestFullscreen();
+        }
+
+        function initGame() {
+            canvas = document.getElementById('grid-canvas');
+            context = canvas.getContext('2d');
+
+            canvas.width = CANVAS_WIDTH;
+            canvas.height = CANVAS_HEIGHT;
+
+            document.addEventListener('mousemove', function(e) {
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+            });
+            
+            drawArena();
+            gameLoop();
+        }
+        // Temp function that just draws a grid, later it should draw the arena
+        function drawArena() {
+            context.clearRect(0, 0, canvas.width, canvas.height);
+            
+            context.lineWidth = 2;
+
+            for (let x = 0; x <= canvas.width; x += GRID_SIZE) {
+                context.beginPath();
+                context.moveTo(x, 0);
+                context.lineTo(x, canvas.height);
+                context.stroke();
+            }
+
+            for (let y = 0; y <= canvas.height; y += GRID_SIZE) {
+                context.beginPath();
+                context.moveTo(0, y);
+                context.lineTo(canvas.width, y);
+                context.stroke();
+            }
+        }
+
+        // Calculates if and how much camera should be moved
+        function moveCamera() {
+            const windowWidth = window.innerWidth;
+            const windowHeight = window.innerHeight;
+            
+            let moveX = 0;
+            let moveY = 0;
+            
+            if (mouseX < edgeThreshold)
+                moveX = cameraSpeed * (1 - mouseX / edgeThreshold);
+            else if (mouseX > windowWidth - edgeThreshold)
+                moveX = -cameraSpeed * ((mouseX - (windowWidth - edgeThreshold)) / edgeThreshold);
+
+            if (mouseY < edgeThreshold)
+                moveY = cameraSpeed * (1 - mouseY / edgeThreshold);
+            else if (mouseY > windowHeight - edgeThreshold)
+                moveY = -cameraSpeed * ((mouseY - (windowHeight - edgeThreshold)) / edgeThreshold);
+
+            cameraX = Math.max(-CANVAS_WIDTH + windowWidth, Math.min(0, cameraX + moveX));
+            cameraY = Math.max(-CANVAS_HEIGHT + windowHeight, Math.min(0, cameraY + moveY));
+        }
+
+        function gameLoop() {
+
+            moveCamera();
+            canvas.style.transform = `translate(${cameraX}px, ${cameraY}px)`;
+            
+            requestAnimationFrame(gameLoop);
+        }
+    </script>
+</body>
+</html>
