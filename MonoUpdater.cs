@@ -9,16 +9,16 @@ public class MonoUpdater
 	{
 		gameObject = obj;
 	}
-	public void Start()
+	public virtual void Start()
+	{
+		Console.WriteLine("You shouldn't be seeing this!");
+	}
+	public virtual void Update()
 	{
 
 	}
-	public void Update()
+	public virtual void FixedUpdate()
 	{
-
-	}
-	public void FixedUpdate()
-	{
-
+		Console.WriteLine("You shouldn't be seeing this!");
 	}
 }

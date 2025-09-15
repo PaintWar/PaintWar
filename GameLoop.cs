@@ -1,5 +1,5 @@
 using System.Diagnostics;
-public class GameLoop
+public static class GameLoop
 {
 	static List<GameObject> gameObjects = new List<GameObject>();
 
@@ -22,6 +22,7 @@ public class GameLoop
 
 	public static void globalUpdate()
 	{
+		int nth_upd = 0;
 		while (true)
 		{
 			Time.getDeltaTime();
@@ -32,11 +33,14 @@ public class GameLoop
 					upd.Update();
 				}
 			}
+			++nth_upd;
+			//if (nth_upd % 50 == 0) Console.WriteLine("update");
 		}
 	}
 
 	public static void globalFixedUpdate()
 	{
+		int nth_fupd = 0;
 		while (true)
 		{
 			float timeNow = (float)Stopwatch.GetTimestamp() / (float)TimeSpan.TicksPerMillisecond;
@@ -49,6 +53,8 @@ public class GameLoop
 			}
 			float updatedTime = (float)Stopwatch.GetTimestamp() / (float)TimeSpan.TicksPerMillisecond;
 			Thread.Sleep((int)((1000f * Time.fixedDeltaTime) - (updatedTime - timeNow)));
+			++nth_fupd;
+			if (nth_fupd % 50 == 0) Console.WriteLine("fixed update");
 		}
 	}
 }
