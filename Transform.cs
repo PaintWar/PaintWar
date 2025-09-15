@@ -1,11 +1,11 @@
 public class Transform
 {
-	public GameObject gameObject;
+	public GameObject? gameObject;
 	List<Transform> childTree = new List<Transform>();
 	public int childCount = 0;
-	public Vector3 position;
-	public Vector3 rotation;
-	public Vector3 scale;
+	public Vector3? position;
+	public Vector3? rotation;
+	public Vector3? scale;
 
 	public void addChild(Transform t)
 	{
@@ -19,6 +19,6 @@ public class Transform
 			Console.WriteLine("Trying to access child out of bounds");
 			return null;
 		}
-		return childTree.Get(index);
+		return childTree[index];
 	}
 }

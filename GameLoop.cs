@@ -1,50 +1,54 @@
-List<GameObject> gameObjects = new List<GameObject>();
-
-void globalStart()
+using System.Diagnostics;
+public class GameLoop
 {
-	Time.previousTime = (float)Stopwatch.GetTimestamp() / (float)TimeSpan.TicksPerMillisecond / 1000f;
-	foreach (GameObject obj in gameObjects)
-	{
-		foreach (MonoUpdater upd in obj.updaters)
-		{
-			upd.Start();
-		}
-	}
-}
+	static List<GameObject> gameObjects = new List<GameObject>();
 
-void globalUpdate()
-{
-	Time.getDeltaTime();
-	foreach (GameObject obj in gameObjects)
+	public static void globalStart()
 	{
-		foreach (MonoUpdater upd in obj.updaters)
-		{
-			upd.Update();
-		}
-	}
-}
+		//Example Updater
+		GameObject g = new GameObject();
+		g.addUpdater(new ExampleUpdater());
+		gameObjects.Add(g);
 
-void globalFixedUpdate()
-{
-	while (True)
-	{
-		float timeNow = (float)Stopwatch.GetTimestamp() / (float)TimeSpan.TicksPerMillisecond;
+		Time.previousTime = (float)Stopwatch.GetTimestamp() / (float)TimeSpan.TicksPerMillisecond / 1000f;
 		foreach (GameObject obj in gameObjects)
 		{
 			foreach (MonoUpdater upd in obj.updaters)
 			{
-				upd.FixedUpdate();
+				upd.Start();
 			}
 		}
-		float updatedTime = (float)Stopwatch.GetTimestamp() / (float)TimeSpan.TicksPerMillisecond;
-		Thread.Sleep((1000f * Time.fixedDeltaTime) - (updatedTime - timeNow));
+	}
+
+	public static void globalUpdate()
+	{
+		while (true)
+		{
+			Time.getDeltaTime();
+			foreach (GameObject obj in gameObjects)
+			{
+				foreach (MonoUpdater upd in obj.updaters)
+				{
+					upd.Update();
+				}
+			}
+		}
+	}
+
+	public static void globalFixedUpdate()
+	{
+		while (true)
+		{
+			float timeNow = (float)Stopwatch.GetTimestamp() / (float)TimeSpan.TicksPerMillisecond;
+			foreach (GameObject obj in gameObjects)
+			{
+				foreach (MonoUpdater upd in obj.updaters)
+				{
+					upd.FixedUpdate();
+				}
+			}
+			float updatedTime = (float)Stopwatch.GetTimestamp() / (float)TimeSpan.TicksPerMillisecond;
+			Thread.Sleep((int)((1000f * Time.fixedDeltaTime) - (updatedTime - timeNow)));
+		}
 	}
 }
-
-globalStart();
-
-Thread t1 = new Thread(globalUpdate);
-Thread t2 = new Thread(globalFixedUpdate);
-
-t1.Start();
-t2.Start();
