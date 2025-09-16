@@ -7,16 +7,21 @@
     <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-    <button id="start-btn" onclick="startGame()">Start game</button><br>
-    <label for="matchId">Match id:</label>
-    <input name="matchId" type="text" id="matchId"></input>
-    <button id="join-btn">Join game</button>
+    <button id="start-btn" class="menu">New game</button><br>
+
+    <label for="matchId" class="menu">Match id:</label>
+    <input name="matchId" type="text" id="matchId" class="menu"></input>
+    <button id="join-btn" class="menu">Join game</button><br>
+
+    <label for="matchIdText" class="game" style="display:none;">Match id:</label>
+    <span name="matchIdText" id="matchIdText" class="game" style="display:none;"></span><br>
+
     <div id="canvas-container">
         <canvas id="grid-canvas"></canvas>
     </div>
 
     <script src="/js/signalr/dist/browser/signalr.js"></script>
     <script type="module" src="js/main.js"></script>
-    <script src="/js/menu.js"></script>
+    <script type="module" src="js/menu.js"></script>
 </body>
 </html>
