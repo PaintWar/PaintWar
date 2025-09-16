@@ -8,6 +8,11 @@ public class GameObject
 	}
 	public void addUpdater(MonoUpdater upd)
 	{
-		updaters.Add(new MonoUpdater(this));
+		updaters.Add(upd);
+		if(upd.gameObject!=null)
+		{
+			Console.WriteLine("WARNING: overriding the assigned GameObject of a MonoUpdater!");
+		}
+		upd.gameObject=this;
 	}
 }

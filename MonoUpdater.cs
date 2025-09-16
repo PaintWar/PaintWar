@@ -1,24 +1,24 @@
 public class MonoUpdater
 {
-	GameObject? gameObject;
+	public GameObject? gameObject;
 	public MonoUpdater()
 	{
-		;
+		gameObject=null;
 	}
 	public MonoUpdater(GameObject obj)
 	{
-		gameObject = obj;
+		obj.addUpdater(this);
 	}
 	public virtual void Start()
 	{
-		Console.WriteLine("You shouldn't be seeing this!");
+		
 	}
 	public virtual void Update()
 	{
-
+		
 	}
 	public virtual void FixedUpdate()
 	{
-		Console.WriteLine("You shouldn't be seeing this!");
+		
 	}
 }

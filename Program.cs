@@ -13,5 +13,3 @@ Thread t2 = new Thread(GameLoop.globalFixedUpdate);
 t1.Start();
 t2.Start();
 web.Start();
-
-Console.WriteLine("Hmm...");

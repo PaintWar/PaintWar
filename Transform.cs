@@ -12,11 +12,11 @@ public class Transform
 		childTree.Add(t);
 		childCount++;
 	}
-	public Transform getChild(int index)
+	public Transform? getChild(int index)
 	{
 		if ((index < childCount - 1) || (index < 0))
 		{
-			Console.WriteLine("Trying to access child out of bounds");
+			Console.WriteLine("WARNING: Trying to access child out of bounds!");
 			return null;
 		}
 		return childTree[index];

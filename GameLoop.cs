@@ -22,10 +22,10 @@ public static class GameLoop
 
 	public static void globalUpdate()
 	{
-		int nth_upd = 0;
 		while (true)
 		{
 			Time.getDeltaTime();
+			float timeNow = (float)Stopwatch.GetTimestamp() / (float)TimeSpan.TicksPerMillisecond; // <-- delete this when rendering works
 			foreach (GameObject obj in gameObjects)
 			{
 				foreach (MonoUpdater upd in obj.updaters)
@@ -33,14 +33,16 @@ public static class GameLoop
 					upd.Update();
 				}
 			}
-			++nth_upd;
-			//if (nth_upd % 50 == 0) Console.WriteLine("update");
+			float updatedTime = (float)Stopwatch.GetTimestamp() / (float)TimeSpan.TicksPerMillisecond; // <-- delete this when rendering works
+			if(updatedTime-timeNow < Time.fixedDeltaTime*1000f)                                        //
+			{                                                                                          //
+				Thread.Sleep((int)((1000f * Time.fixedDeltaTime) - (updatedTime - timeNow)));          //
+			}                                                                                          //
 		}
 	}
 
 	public static void globalFixedUpdate()
 	{
-		int nth_fupd = 0;
 		while (true)
 		{
 			float timeNow = (float)Stopwatch.GetTimestamp() / (float)TimeSpan.TicksPerMillisecond;
@@ -53,8 +55,6 @@ public static class GameLoop
 			}
 			float updatedTime = (float)Stopwatch.GetTimestamp() / (float)TimeSpan.TicksPerMillisecond;
 			Thread.Sleep((int)((1000f * Time.fixedDeltaTime) - (updatedTime - timeNow)));
-			++nth_fupd;
-			if (nth_fupd % 50 == 0) Console.WriteLine("fixed update");
 		}
 	}
 }
