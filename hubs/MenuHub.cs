@@ -4,17 +4,24 @@ namespace PaintWar.Hubs
 {
     public class MenuHub : Hub
     {
-        public async Task JoinGame(String matchId)
+        public async Task NewMatch()
         {
-            Console.WriteLine(matchId);
+            Match match = State.matchCreate();
+            // add user to the match
+            await Clients.Caller.SendAsync("JoinMatch", match.id);
+        }
 
+        public async Task JoinMatch(String matchId)
+        {
             if (!State.matchExists(matchId))
             {
-                State.createMatch(matchId);
+                await Clients.Caller.SendAsync("JoinFailed");
             }
-
-            // add user to the match
-            await Clients.Caller.SendAsync("JoinGame", matchId);
+            else
+            {
+                // add user to the match
+                await Clients.Caller.SendAsync("JoinMatch", matchId);
+            }
         }
     }
 }
