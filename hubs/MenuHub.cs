@@ -7,7 +7,8 @@ namespace PaintWar.Hubs
         public async Task NewMatch()
         {
             Match match = State.matchCreate();
-            // add user to the match
+            // should add user to the match, but we can figure that out later
+            // when we add some kind of login system
             await Clients.Caller.SendAsync("JoinMatch", match.id);
         }
 
@@ -19,7 +20,8 @@ namespace PaintWar.Hubs
             }
             else
             {
-                // add user to the match
+                // should add user to the match, but we can figure that out later
+                // when we add some kind of login system
                 await Clients.Caller.SendAsync("JoinMatch", matchId);
             }
         }
