@@ -1,7 +1,13 @@
+using PaintWar.Hubs;
+
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddSignalR();
+
 var app = builder.Build();
 
 app.UseDefaultFiles();
-app.UseStaticFiles();  
+app.UseStaticFiles();
+
+app.MapHub<MenuHub>("/menuHub");
 
 app.Run();
