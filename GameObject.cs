@@ -15,4 +15,12 @@ public class GameObject
 		}
 		upd.gameObject=this;
 	}
+	public MonoUpdater? GetComponent<T>()
+	{
+		foreach(MonoUpdater upd in updaters)
+		{
+			if(upd.GetType()==typeof(T))return upd;
+		}
+		return null;
+	}
 }
