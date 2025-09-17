@@ -28,7 +28,7 @@ export default function startGame() {
     canvas.height = CANVAS_HEIGHT;
 
     camera = new Camera(window.innerWidth, window.innerHeight);
-    input = new InputHandler();
+    input = new InputHandler(canvas);
     window.addEventListener("resize", resizeCamera);
 
     gameLoop();
@@ -46,6 +46,12 @@ function enterFullScreen() {
         element.webkitRequestfullscreen();
     else if(element.msRequestFullscreen)
         element.msRequestFullscreen();
+
+    document.addEventListener("fullscreenchange", () => {
+        if (document.fullscreenElement) {
+            canvas.requestPointerLock();
+        }
+    }, { once: true });
 }
 
 // Function ran when window is resized
@@ -59,10 +65,23 @@ function resizeCamera() {
 
 function gameLoop() {
     camera.move(input.mouseX, input.mouseY, CANVAS_WIDTH, CANVAS_HEIGHT);
+    render()
+    requestAnimationFrame(gameLoop);
+}
+
+function render() {
     context.clearRect(0, 0, canvas.width, canvas.height);
     drawArena(context, camera, GRID_SIZE, CANVAS_WIDTH, CANVAS_HEIGHT);
+    drawMouseIndicator();
+}
 
-    requestAnimationFrame(gameLoop);
+function drawMouseIndicator() {
+    if (document.pointerLockElement === canvas) {
+        context.fillStyle = "red";
+        context.beginPath();
+        context.arc(input.mouseX, input.mouseY, 5, 0, Math.PI * 2);
+        context.fill();
+    }
 }
 
 window.startGame = startGame;
