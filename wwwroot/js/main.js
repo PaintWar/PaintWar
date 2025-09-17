@@ -84,4 +84,5 @@ function drawMouseIndicator() {
     }
 }
 
+
 window.startGame = startGame;

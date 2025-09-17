@@ -1,5 +1,5 @@
 export class Camera {
-    constructor(width, height, speed = 5, edgeThreshold = 25) {
+    constructor(width, height, speed = 5, edgeThreshold = 1) {
         this.x = 0;
         this.y = 0;
         this.width = width;
