@@ -25,7 +25,7 @@ public static class GameLoop
 		while (true)
 		{
 			Time.getDeltaTime();
-			float timeNow = (float)Stopwatch.GetTimestamp() / (float)TimeSpan.TicksPerMillisecond; // <-- delete this when rendering works
+			float timeNow = (float)Stopwatch.GetTimestamp() / (float)(Stopwatch.Frequency / 1000f); // <-- delete this when rendering works
 			foreach (GameObject obj in gameObjects)
 			{
 				foreach (MonoUpdater upd in obj.updaters)
@@ -33,7 +33,7 @@ public static class GameLoop
 					upd.Update();
 				}
 			}
-			float updatedTime = (float)Stopwatch.GetTimestamp() / (float)TimeSpan.TicksPerMillisecond; // <-- delete this when rendering works
+			float updatedTime = (float)Stopwatch.GetTimestamp() / (float)(Stopwatch.Frequency / 1000f); // <-- delete this when rendering works
 			if(updatedTime-timeNow < Time.fixedDeltaTime*1000f)                                        //
 			{                                                                                          //
 				Thread.Sleep((int)((1000f * Time.fixedDeltaTime) - (updatedTime - timeNow)));          //
@@ -45,7 +45,7 @@ public static class GameLoop
 	{
 		while (true)
 		{
-			float timeNow = (float)Stopwatch.GetTimestamp() / (float)TimeSpan.TicksPerMillisecond;
+			float timeNow = (float)Stopwatch.GetTimestamp() / (float)(Stopwatch.Frequency / 1000f);
 			foreach (GameObject obj in gameObjects)
 			{
 				foreach (MonoUpdater upd in obj.updaters)
@@ -53,7 +53,7 @@ public static class GameLoop
 					upd.FixedUpdate();
 				}
 			}
-			float updatedTime = (float)Stopwatch.GetTimestamp() / (float)TimeSpan.TicksPerMillisecond;
+			float updatedTime = (float)Stopwatch.GetTimestamp() / (float)(Stopwatch.Frequency / 1000f);
 			Thread.Sleep((int)((1000f * Time.fixedDeltaTime) - (updatedTime - timeNow)));
 		}
 	}
