@@ -6,4 +6,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
+  <Target Name="RestoreClientSideLibraries" BeforeTargets="Build" Condition="!Exists('wwwroot/js/signalr/signalr.js')">
+    <Exec Command="libman restore" />
+  </Target>
+
 </Project>
