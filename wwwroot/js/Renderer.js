@@ -12,6 +12,17 @@ export class Renderer {
 
         this.worldContainer = new PIXI.Container();
         this.app.stage.addChild(this.worldContainer);
+
+        this.backgroundLayer = new PIXI.Container();
+        this.paintLayer = new PIXI.Container();
+        this.entityLayer = new PIXI.Container();
+        this.worldContainer.addChild(this.backgroundLayer);
+        this.worldContainer.addChild(this.paintLayer);
+        this.worldContainer.addChild(this.entityLayer);
+
+        this.worldContainer.setChildIndex(this.backgroundLayer, 0);
+        this.worldContainer.setChildIndex(this.paintLayer, 1);
+        this.worldContainer.setChildIndex(this.entityLayer, 2);
         
         this.uiLayer = new PIXI.Container();
         this.app.stage.addChild(this.uiLayer);
@@ -32,6 +43,15 @@ export class Renderer {
     render(camera) {
         this.worldContainer.x = -camera.x;
         this.worldContainer.y = -camera.y;
+    }
+
+    drawCell(cell) {
+        const graphics = new PIXI.Graphics();
+        graphics.beginFill(cell.color);
+        graphics.drawRect(cell.x * cell.size, cell.y * cell.size, cell.size, cell.size);
+        graphics.endFill();
+
+        this.paintLayer.addChild(graphics);
     }
 
     drawMouseIndicator(x, y) {

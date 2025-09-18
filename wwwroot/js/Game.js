@@ -1,14 +1,27 @@
 import { Camera } from './Camera.js';
 import { InputHandler } from './InputHandler.js';
 import { Renderer } from './Renderer.js';
+import { Cell } from './Cell.js';
 export class Game {
-    constructor() {
-        this.canvasWidth = 2000;
-        this.canvasHeight = 2000;
+    constructor(canvasWidth = 2000, canvasHeight = 2000, cellSize = 8) {
+        this.canvasWidth = canvasWidth;
+        this.canvasHeight = canvasHeight;
+        this.cellSize = cellSize;
+
         this.camera = null;
         this.input = null;
         this.renderer = null;
         this.running = false;
+
+        this.rows = Math.ceil(canvasHeight / cellSize);
+        this.cols = Math.ceil(canvasWidth / cellSize);
+
+        this.cellGrid = Array.from({ length: this.rows }, (_, row) =>
+            Array.from({ length: this.cols }, (_, col) => new Cell(col, row, cellSize)));
+        this.playerColors = {
+            1: 0xff0000,
+            2: 0x0000ff
+        };
     }
 
     initialize() {
@@ -34,6 +47,28 @@ export class Game {
 
     update() {
         this.camera.move(this.input.mouseX, this.input.mouseY, this.canvasWidth, this.canvasHeight);
+
+        if (this.input.leftMouseDown) {
+            this.paintCell(this.input.mouseX, this.input.mouseY, 1);
+        }
+    }
+
+    paintCell(x, y, playerId) {
+        x += this.camera.x;
+        y += this.camera.y;
+        const col = Math.floor(x / this.cellSize);
+        const row = Math.floor(y / this.cellSize);
+
+        if (!this.cellGrid[row] || !this.cellGrid[row][col])
+            return;
+
+        const cell = this.cellGrid[row][col];
+        if (cell.owner === playerId)
+            return;
+
+        cell.paint(playerId, this.playerColors[playerId]);
+
+        this.renderer.drawCell(cell);
     }
 
     render() {
