@@ -43,18 +43,27 @@ public static class GameLoop
 
 	public static void globalFixedUpdate()
 	{
+		float accumulator = 0;
+		float timeNow = (float)Stopwatch.GetTimestamp() / (float)(Stopwatch.Frequency / 1000f);
 		while (true)
 		{
-			float timeNow = (float)Stopwatch.GetTimestamp() / (float)(Stopwatch.Frequency / 1000f);
-			foreach (GameObject obj in gameObjects)
-			{
-				foreach (MonoUpdater upd in obj.updaters)
-				{
-					upd.FixedUpdate();
-				}
-			}
 			float updatedTime = (float)Stopwatch.GetTimestamp() / (float)(Stopwatch.Frequency / 1000f);
-			Thread.Sleep((int)((1000f * Time.fixedDeltaTime) - (updatedTime - timeNow)));
+			accumulator += (updatedTime - timeNow);
+			timeNow = updatedTime;
+			
+			while(accumulator >= Time.fixedDeltaTime)
+			{
+				foreach (GameObject obj in gameObjects)
+				{
+					foreach (MonoUpdater upd in obj.updaters)
+					{
+						upd.FixedUpdate();
+					}
+				}
+				accumulator -= Time.fixedDeltaTime;
+			}
+			
+			Thread.Sleep((int)(Math.Max(((1000f * Time.fixedDeltaTime) - accumulator), 0)));
 		}
 	}
 }
