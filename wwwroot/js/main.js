@@ -7,6 +7,7 @@ const CANVAS_HEIGHT = 2000;
 const GRID_SIZE = 50;
 
 let canvas, context;
+let app;
 let camera, input;
 
 export default function startGame() {
@@ -21,15 +22,27 @@ export default function startGame() {
     }
 
     enterFullScreen();
-
-    canvas = document.getElementById('grid-canvas');
-    context = canvas.getContext('2d');
-    canvas.width = CANVAS_WIDTH;
-    canvas.height = CANVAS_HEIGHT;
+    app = new PIXI.Application({
+        width: window.innerWidth,
+        height: window.innerHeight,
+        backgroundColor: 0xffffff
+    });
+    document.getElementById('canvas-container').appendChild(app.view);
+    const world = new PIXI.Container();
+    app.stage.addChild(world);
+    app.world = world;
+    const overlayCanvas = document.getElementById("grid-canvas");
+    overlayCanvas.width = CANVAS_WIDTH;
+    overlayCanvas.height = CANVAS_HEIGHT;
+    overlayCanvas.style.position = "absolute";
+    overlayCanvas.style.top = "0";
+    overlayCanvas.style.left = "0";
+    overlayCanvas.style.opacity = "0";
 
     camera = new Camera(window.innerWidth, window.innerHeight);
-    input = new InputHandler(canvas);
+    input = new InputHandler(overlayCanvas);
     window.addEventListener("resize", resizeCamera);
+    drawArena(app.world, GRID_SIZE, CANVAS_WIDTH, CANVAS_HEIGHT);
 
     gameLoop();
 }
@@ -49,7 +62,7 @@ function enterFullScreen() {
 
     document.addEventListener("fullscreenchange", () => {
         if (document.fullscreenElement) {
-            canvas.requestPointerLock();
+            document.getElementById('grid-canvas').requestPointerLock();
         }
     }, { once: true });
 }
@@ -61,6 +74,7 @@ function resizeCamera() {
 
     camera.width = window.innerWidth;
     camera.height = window.innerHeight;
+    app.renderer.resize(camera.width, camera.height);
 }
 
 function gameLoop() {
@@ -70,17 +84,22 @@ function gameLoop() {
 }
 
 function render() {
-    context.clearRect(0, 0, canvas.width, canvas.height);
-    drawArena(context, camera, GRID_SIZE, CANVAS_WIDTH, CANVAS_HEIGHT);
+    app.world.x = -camera.x;
+    app.world.y = -camera.y;
     drawMouseIndicator();
 }
 
 function drawMouseIndicator() {
-    if (document.pointerLockElement === canvas) {
-        context.fillStyle = "red";
-        context.beginPath();
-        context.arc(input.mouseX, input.mouseY, 5, 0, Math.PI * 2);
-        context.fill();
+    if (document.pointerLockElement === document.getElementById("grid-canvas")) {
+        const circle = new PIXI.Graphics();
+        circle.beginFill(0xff0000);
+        circle.drawCircle(input.mouseX, input.mouseY, 5);
+        circle.endFill();
+
+        // remove old indicator if any
+        if (app.mouseIndicator) app.stage.removeChild(app.mouseIndicator);
+        app.stage.addChild(circle);
+        app.mouseIndicator = circle;
     }
 }
 
