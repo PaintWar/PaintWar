@@ -47,7 +47,7 @@ export class Game {
 
     update() {
         this.camera.move(this.input.mouseX, this.input.mouseY, this.canvasWidth, this.canvasHeight);
-
+        // Send paint request to the server here
         if (this.input.leftMouseDown) {
             this.paintCell(this.input.mouseX, this.input.mouseY, 1);
         }
@@ -77,7 +77,8 @@ export class Game {
     }
 
     resize() {
-        if (!this.camera) return;
+        if (!this.camera)
+            return;
 
         this.camera.width = window.innerWidth;
         this.camera.height = window.innerHeight;

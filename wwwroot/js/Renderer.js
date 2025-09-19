@@ -14,7 +14,13 @@ export class Renderer {
         this.app.stage.addChild(this.worldContainer);
 
         this.backgroundLayer = new PIXI.Container();
-        this.paintLayer = new PIXI.Container();
+
+        this.paintTexture = PIXI.RenderTexture.create({
+            width: canvasWidth,
+            height: canvasHeight
+        });
+        this.paintLayer = new PIXI.Sprite(this.paintTexture);
+
         this.entityLayer = new PIXI.Container();
         this.worldContainer.addChild(this.backgroundLayer);
         this.worldContainer.addChild(this.paintLayer);
@@ -38,6 +44,8 @@ export class Renderer {
         this.overlayCanvas.style.top = "0";
         this.overlayCanvas.style.left = "0";
         this.overlayCanvas.style.opacity = "0";
+
+        this.cellBrush = new PIXI.Graphics();
     }
 
     render(camera) {
@@ -46,12 +54,15 @@ export class Renderer {
     }
 
     drawCell(cell) {
-        const graphics = new PIXI.Graphics();
-        graphics.beginFill(cell.color);
-        graphics.drawRect(cell.x * cell.size, cell.y * cell.size, cell.size, cell.size);
-        graphics.endFill();
+        this.cellBrush.clear();
+        this.cellBrush.beginFill(cell.color);
+        this.cellBrush.drawRect(cell.x * cell.size, cell.y * cell.size, cell.size, cell.size);
+        this.cellBrush.endFill();
 
-        this.paintLayer.addChild(graphics);
+        this.app.renderer.render(this.cellBrush, {
+            renderTexture: this.paintTexture,
+            clear: false
+        });
     }
 
     drawMouseIndicator(x, y) {
@@ -61,7 +72,8 @@ export class Renderer {
             this.mouseIndicator.drawCircle(x, y, 5);
             this.mouseIndicator.endFill();
             this.mouseIndicator.visible = true;
-        } else {
+        } 
+        else {
             this.mouseIndicator.visible = false;
         }
     }
