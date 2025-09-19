@@ -63,6 +63,7 @@ export class Game {
             return;
 
         const cell = this.cellGrid[row][col];
+        
         if (cell.owner === playerId)
             return;
 
@@ -80,8 +81,11 @@ export class Game {
         if (!this.camera)
             return;
 
-        this.camera.width = window.innerWidth;
-        this.camera.height = window.innerHeight;
+        const rect = document.getElementById("grid-canvas").getBoundingClientRect();
+        this.camera.width = window.innerWidth - rect.left;
+        this.camera.height = window.innerHeight - rect.top;
+        console.log(rect.top);
+
         this.renderer.resize(this.camera.width, this.camera.height);
     }
 

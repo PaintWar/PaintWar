@@ -4,16 +4,12 @@ let game;
 
 export default function startGame() {
 
-    const menuItems = document.getElementsByClassName('menu');
-    for (const item of menuItems) {
-        item.style.display = 'none';
-    }
-
+    document.getElementById('menu-container').style.display = 'none';
+    
     const gameItems = document.getElementsByClassName('game');
     for (const item of gameItems) {
         item.style.display = '';
     }
-
     enterFullScreen();
     
     game = new Game();

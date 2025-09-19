@@ -80,5 +80,7 @@ export class Renderer {
 
     resize(width, height) {
         this.app.renderer.resize(width, height);
+        this.overlayCanvas.width = width;
+        this.overlayCanvas.height = height;
     }
 }
