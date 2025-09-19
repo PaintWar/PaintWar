@@ -9,8 +9,17 @@ const GRID_SIZE = 50;
 let canvas, context;
 let camera, input;
 
-function startGame() {
-    document.getElementById('start-btn').style.display = 'none';
+export default function startGame() {
+    var menuItems = document.getElementsByClassName('menu');
+    for (const item of menuItems) {
+        item.style.display = 'none';
+    }
+
+    var gameItems = document.getElementsByClassName('game');
+    for (const item of gameItems) {
+        item.style.display = '';
+    }
+
     enterFullScreen();
 
     canvas = document.getElementById('grid-canvas');
