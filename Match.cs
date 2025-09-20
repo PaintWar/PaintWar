@@ -1,12 +1,31 @@
+using System.Drawing;
+
 public class Match : IEquatable<Match>
 {
-    public string id { get; set; }
+    public string Id { get; set; }
     public List<Player> players = new List<Player>();
 
-    public Match() => this.id = randomId();
+    // Maybe these hardcoded values shouldn't be here
+    public const int mapWidth = 250, mapHeight = 250;
+    public List<List<Cell>> Cells { get; set; } = new List<List<Cell>>();
+    public List<int> Colors = new List<int> { 0xff0000, 0x0000ff };
+    public Match()
+    {
+        this.Id = randomId();
+        
+        for (int y = 0; y < mapHeight; y++)
+        {
+            var row = new List<Cell>();
+            for (int x = 0; x < mapWidth; x++)
+            {
+                row.Add(new Cell());
+            }
+            Cells.Add(row);
+        }
+    }
+    public Match(string matchId) => this.Id = matchId;
 
-    public Match(string matchId) => this.id = matchId;
-
+    
     private string randomId()
     {
         Random rand = new Random();
@@ -21,5 +40,7 @@ public class Match : IEquatable<Match>
         return new String(id);
     }
 
-    public bool Equals(Match? other) => other is not null && this.id == other.id;
+    public bool Equals(Match? other) => other is not null && this.Id == other.Id;
+
+    public void AddPlayer(Player player) => players.Add(player);
 }

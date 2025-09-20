@@ -33,7 +33,11 @@ connection.on("JoinMatch", function (matchId) {
     console.log("Joined game: " + matchId);
     document.getElementById("matchIdText").textContent = matchId;
 
-    startGame()
+    var gameConnection = new signalR.HubConnectionBuilder().withUrl("/gameHub").build();
+    gameConnection.start().then(() => {
+        gameConnection.invoke("JoinMatch", matchId);
+        startGame(gameConnection, matchId);
+    });
 });
 
 connection.on("JoinFailed", function () {

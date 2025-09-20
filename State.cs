@@ -2,10 +2,9 @@ public static class State
 {
     public static List<Match> matches = new List<Match>();
 
-    public static bool matchExists(string matchId) => matches.Contains(new Match(matchId));
+    public static bool matchExists(string matchId) => matches.Any(m => m.Id == matchId);
 
-    public static Match matchGet(string matchId) =>
-        matches.Find((Match match) => match == new Match(matchId)) ?? matchCreate();
+    public static Match matchGet(string matchId) => matches.FirstOrDefault(m => m.Id == matchId) ?? matchCreate();
 
     public static Match matchCreate()
     {
