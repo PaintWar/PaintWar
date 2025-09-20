@@ -10,15 +10,11 @@ let canvas, context;
 let camera, input;
 
 export default function startGame() {
-    var menuItems = document.getElementsByClassName('menu');
-    for (const item of menuItems) {
-        item.style.display = 'none';
-    }
+    var menuContainer = document.getElementById('menu-container');
+    menuContainer.style.display = 'none';
 
-    var gameItems = document.getElementsByClassName('game');
-    for (const item of gameItems) {
-        item.style.display = '';
-    }
+    var gameContainer = document.getElementById('game-container');
+    gameContainer.style.display = '';
 
     enterFullScreen();
 

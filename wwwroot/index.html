@@ -4,20 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Paint War</title>
-    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <button id="start-btn" class="menu">New game</button><br>
+    <div id="menu-container">
+        <h1>PAINT WAR</h1>
+        <button id="start-btn">New game</button>
+        <div>
+            <input name="matchId" type="text" id="matchId" placeholder="Match Code"></input>
+            <button id="join-btn">Join</button>
+        </div>
+    </div>
 
-    <label for="matchId" class="menu">Match id:</label>
-    <input name="matchId" type="text" id="matchId" class="menu"></input>
-    <button id="join-btn" class="menu">Join game</button><br>
-
-    <label for="matchIdText" class="game" style="display:none;">Match id:</label>
-    <span name="matchIdText" id="matchIdText" class="game" style="display:none;"></span><br>
-
-    <div id="canvas-container">
-        <canvas id="grid-canvas"></canvas>
+    <div id="game-container" style="display: none;">
+        <label for="matchIdText">Match id:</label>
+        <span name="matchIdText" id="matchIdText"></span>
+        <div id="canvas-container">
+            <canvas id="grid-canvas"></canvas>
+        </div>
     </div>
 
     <script src="/js/signalr/dist/browser/signalr.js"></script>
