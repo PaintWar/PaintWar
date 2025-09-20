@@ -21,7 +21,7 @@ namespace PaintWar.Hubs
             Player? player = match.players.FirstOrDefault(p => p.Id == Context.ConnectionId);
             if (player == null) return;
 
-            if (row < 0 || col > Match.mapWidth || row < 0 || row > Match.mapHeight) return;
+            if (row < 0 || col >= Match.mapWidth || row < 0 || row >= Match.mapHeight) return;
             if (match.Cells[row][col].OwnerId == player.Id) return;
             match.Cells[row][col].OwnerId = player.Id;
             match.Cells[row][col].Color = match.Colors[player.Number];
