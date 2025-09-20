@@ -4,7 +4,6 @@ export class GameNetwork {
         this.matchId = matchId;
         this.game = game;
         this.connection.on("Map", (mapWidth, mapHeight, cells) => {
-            console.log("Paint map");
             this.game.loadMap(mapWidth, mapHeight, cells);
         });
         this.connection.on("CellUpdated", (x, y, playerId, color) => {
@@ -12,7 +11,6 @@ export class GameNetwork {
         });
     }
     paintCell(row, col) {
-        console.log(this.matchId);
         return this.connection.invoke("PaintCell", this.matchId, row, col);
     }
     

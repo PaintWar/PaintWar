@@ -38,7 +38,7 @@ export class Game {
         for (let row = 0; row < this.rows; row++) {
             for (let col =  0; col < this.cols; col++) {
                 if (cells[row][col].ownerId !== null) {
-                    this.paintCell(col, row, cells[row][col].ownerId, cells[row][col].color)
+                    this.paintCell(row, col, cells[row][col].ownerId, cells[row][col].color)
                 }
             }
         }

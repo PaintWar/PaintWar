@@ -6,7 +6,6 @@ let game;
 export default function startGame(connection, matchId) {
 
     document.getElementById('menu-container').style.display = 'none';
-    
     const gameItems = document.getElementsByClassName('game');
     for (const item of gameItems) {
         item.style.display = '';
@@ -34,6 +33,14 @@ function enterFullScreen() {
             gridCanvas.requestPointerLock();
         }
     }, { once: true });
+    document.addEventListener("click", () => {
+        if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen();
+        }
+        if (document.pointerLockElement !== gridCanvas) {
+            gridCanvas.requestPointerLock();
+        }
+    });
 }
 
 window.addEventListener("resize", () => {

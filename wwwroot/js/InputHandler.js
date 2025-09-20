@@ -2,7 +2,6 @@ export class InputHandler {
     constructor(canvas) {
         this.mouseX = window.innerWidth / 2;
         this.mouseY = window.innerHeight / 2;
-        
         this.leftMouseDown = false;
         this.rightMouseDown = false;
         this.lastClick = null;
@@ -15,8 +14,9 @@ export class InputHandler {
                 this.mouseY = Math.max(0, Math.min(this.mouseY, window.innerHeight));
             }
             else {
-                this.mouseX = e.clientX;
-                this.mouseY = e.clientY;
+                const rect = document.getElementById("grid-canvas").getBoundingClientRect();
+                this.mouseX = e.clientX - rect.x;
+                this.mouseY = e.clientY - rect.y;
             }
         });
 
