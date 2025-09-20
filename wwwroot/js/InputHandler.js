@@ -10,8 +10,9 @@ export class InputHandler {
             if (document.pointerLockElement === canvas) {
                 this.mouseX += e.movementX;
                 this.mouseY += e.movementY;
-                this.mouseX = Math.max(0, Math.min(this.mouseX, window.innerWidth));
-                this.mouseY = Math.max(0, Math.min(this.mouseY, window.innerHeight));
+                const rect = document.getElementById("grid-canvas").getBoundingClientRect();
+                this.mouseX = Math.max(0, Math.min(this.mouseX, window.innerWidth - rect.left));
+                this.mouseY = Math.max(0, Math.min(this.mouseY, window.innerHeight - rect.top));
             }
             else {
                 const rect = document.getElementById("grid-canvas").getBoundingClientRect();
