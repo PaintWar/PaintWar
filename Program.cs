@@ -9,5 +9,6 @@ app.UseDefaultFiles();
 app.UseStaticFiles();
 
 app.MapHub<MenuHub>("/menuHub");
+app.MapHub<GameHub>("/gameHub");
 
 app.Run();

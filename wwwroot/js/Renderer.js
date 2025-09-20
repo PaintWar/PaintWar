@@ -12,23 +12,6 @@ export class Renderer {
 
         this.worldContainer = new PIXI.Container();
         this.app.stage.addChild(this.worldContainer);
-
-        this.backgroundLayer = new PIXI.Container();
-
-        this.paintTexture = PIXI.RenderTexture.create({
-            width: canvasWidth,
-            height: canvasHeight
-        });
-        this.paintLayer = new PIXI.Sprite(this.paintTexture);
-
-        this.entityLayer = new PIXI.Container();
-        this.worldContainer.addChild(this.backgroundLayer);
-        this.worldContainer.addChild(this.paintLayer);
-        this.worldContainer.addChild(this.entityLayer);
-
-        this.worldContainer.setChildIndex(this.backgroundLayer, 0);
-        this.worldContainer.setChildIndex(this.paintLayer, 1);
-        this.worldContainer.setChildIndex(this.entityLayer, 2);
         
         this.uiLayer = new PIXI.Container();
         this.app.stage.addChild(this.uiLayer);
@@ -46,6 +29,10 @@ export class Renderer {
         this.overlayCanvas.style.opacity = "0";
 
         this.cellBrush = new PIXI.Graphics();
+
+        this.paintLayer = null;
+        this.backgroundLayer = null;
+        this.entityLayer = null;
     }
 
     render(camera) {
@@ -83,4 +70,21 @@ export class Renderer {
         this.overlayCanvas.width = width;
         this.overlayCanvas.height = height;
     }
+    createMapLayers(mapWidth, mapHeight) {
+        if (this.backgroundLayer) this.worldContainer.removeChild(this.backgroundLayer);
+        if (this.paintLayer) this.worldContainer.removeChild(this.paintLayer);
+        if (this.entityLayer) this.worldContainer.removeChild(this.entityLayer);
+        this.backgroundLayer = new PIXI.Container();
+        this.paintTexture = PIXI.RenderTexture.create({
+            width: mapWidth,
+            height: mapHeight
+        });
+
+        this.paintLayer = new PIXI.Sprite(this.paintTexture);
+        this.entityLayer = new PIXI.Container();
+        this.worldContainer.addChild(this.backgroundLayer);
+        this.worldContainer.addChild(this.paintLayer);
+        this.worldContainer.addChild(this.entityLayer);
+    }
+
 }

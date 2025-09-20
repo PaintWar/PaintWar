@@ -1,8 +1,9 @@
 import { Game } from './Game.js';
+import { GameNetwork } from './GameNetwork.js';
 
 let game;
 
-export default function startGame() {
+export default function startGame(connection, matchId) {
 
     document.getElementById('menu-container').style.display = 'none';
     
@@ -13,8 +14,8 @@ export default function startGame() {
     enterFullScreen();
     
     game = new Game();
-    game.initialize();
-
+    //game.initialize();
+    game.setNetwork(new GameNetwork(connection, matchId, game));
     game.run();
 }
 
