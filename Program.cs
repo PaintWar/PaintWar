@@ -1,7 +1,22 @@
+using PaintWar.Hubs;
+
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddSignalR();
+
 var app = builder.Build();
 
 app.UseDefaultFiles();
-app.UseStaticFiles();  
+app.UseStaticFiles();
 
-app.Run();
+app.MapHub<MenuHub>("/menuHub");
+app.MapHub<GameHub>("/gameHub");
+
+GameLoop.globalStart();
+
+Thread web = new Thread(app.Run);
+Thread t1 = new Thread(GameLoop.globalUpdate);
+Thread t2 = new Thread(GameLoop.globalFixedUpdate);
+
+t1.Start();
+t2.Start();
+web.Start();

@@ -1,63 +1,52 @@
-import { Camera } from "./camera.js";
-import { drawArena } from "./arena.js";
-import { InputHandler } from "./inputHandler.js";
-import { Painting } from "./painting.js";
+import { Game } from './Game.js';
+import { GameNetwork } from './GameNetwork.js';
 
-const CANVAS_WIDTH = 2000;
-const CANVAS_HEIGHT = 2000;
-const GRID_SIZE = 50;
+let game;
 
-let canvas, context;
-let camera, input, painting;
+export default function startGame(connection, matchId) {
+    var menuContainer = document.getElementById('menu-container');
+    menuContainer.style.display = 'none';
 
-function startGame() {
-    document.getElementById('start-btn').style.display = 'none';
+    var gameContainer = document.getElementById('game-container');
+    gameContainer.style.display = '';
+
     enterFullScreen();
 
-    canvas = document.getElementById('grid-canvas');
-    context = canvas.getContext('2d');
-    canvas.width = CANVAS_WIDTH;
-    canvas.height = CANVAS_HEIGHT;
-
-    camera = new Camera(window.innerWidth, window.innerHeight);
-    input = new InputHandler(canvas);
-    painting = new Painting(canvas, camera, CANVAS_WIDTH, CANVAS_HEIGHT);
-
-    window.addEventListener("resize", resizeCamera);
-    canvas.addEventListener('mousedown', e => painting.startPainting(e));
-    canvas.addEventListener('mousemove', e => painting.paint(e));
-    canvas.addEventListener('mouseup', () => painting.stopPainting());
-    canvas.addEventListener('mouseleave', () => painting.stopPainting());
-
-    gameLoop();
+    game = new Game();
+    //game.initialize();
+    game.setNetwork(new GameNetwork(connection, matchId, game));
+    game.run();
 }
 
 function enterFullScreen() {
     const element = document.documentElement;
-    document.getElementById('grid-canvas').style.display = 'block';
-    if(element.requestFullscreen)
-        element.requestFullscreen();
-    else if(element.mozRequestFullScreen)
-        element.mozRequestFullScreen();
-    else if(element.webkitRequestFullscreen)
-        element.webkitRequestFullscreen();
-    else if(element.msRequestFullscreen)
-        element.msRequestFullscreen();
+    const gridCanvas = document.getElementById("grid-canvas");
+    gridCanvas.style.display = 'block';
+
+    if (element.requestFullscreen) element.requestFullscreen();
+    else if (element.mozRequestFullScreen) element.mozRequestFullScreen();
+    else if (element.webkitRequestFullscreen) element.webkitRequestFullscreen();
+    else if (element.msRequestFullscreen) element.msRequestFullscreen();
+
+    document.addEventListener("fullscreenchange", () => {
+        if (document.fullscreenElement) {
+            gridCanvas.requestPointerLock();
+        }
+    }, { once: true });
+    document.addEventListener("click", () => {
+        if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen();
+        }
+        if (document.pointerLockElement !== gridCanvas) {
+            gridCanvas.requestPointerLock();
+        }
+    });
 }
 
-function resizeCamera() {
-    if (!camera) return;
-    camera.width = window.innerWidth;
-    camera.height = window.innerHeight;
-}
-
-function gameLoop() {
-    camera.move(input.mouseX, input.mouseY, CANVAS_WIDTH, CANVAS_HEIGHT);
-    context.clearRect(0, 0, canvas.width, canvas.height);
-    drawArena(context, camera, GRID_SIZE, CANVAS_WIDTH, CANVAS_HEIGHT);
-    painting.draw(context, camera);
-
-    requestAnimationFrame(gameLoop);
-}
+window.addEventListener("resize", () => {
+    if (game) {
+        game.resize();
+    }
+});
 
 window.startGame = startGame;

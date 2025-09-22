@@ -26,11 +26,26 @@
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <button id="start-btn" onclick="startGame()">Start game</button>
-    <div id="canvas-container">
-        <canvas id="grid-canvas"></canvas>
+    <div id="menu-container">
+        <h1>PAINT WAR</h1>
+        <button id="start-btn">New game</button>
+        <div>
+            <input name="matchId" type="text" id="matchId" placeholder="Match Code"></input>
+            <button id="join-btn">Join</button>
+        </div>
     </div>
 
+    <div id="game-container" style="display: none;">
+        <label for="matchIdText">Match id:</label>
+        <span name="matchIdText" id="matchIdText"></span>
+        <div id="canvas-container">
+            <canvas id="grid-canvas"></canvas>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/7.3.0/pixi.min.js"></script>
+
+    <script src="/js/signalr/dist/browser/signalr.js"></script>
     <script type="module" src="js/main.js"></script>
+    <script type="module" src="js/menu.js"></script>
 </body>
 </html>
