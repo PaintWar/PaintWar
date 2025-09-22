@@ -4,14 +4,14 @@ import { GameNetwork } from './GameNetwork.js';
 let game;
 
 export default function startGame(connection, matchId) {
+    var menuContainer = document.getElementById('menu-container');
+    menuContainer.style.display = 'none';
 
-    document.getElementById('menu-container').style.display = 'none';
-    const gameItems = document.getElementsByClassName('game');
-    for (const item of gameItems) {
-        item.style.display = '';
-    }
+    var gameContainer = document.getElementById('game-container');
+    gameContainer.style.display = '';
+
     enterFullScreen();
-    
+
     game = new Game();
     //game.initialize();
     game.setNetwork(new GameNetwork(connection, matchId, game));
@@ -22,7 +22,7 @@ function enterFullScreen() {
     const element = document.documentElement;
     const gridCanvas = document.getElementById("grid-canvas");
     gridCanvas.style.display = 'block';
-    
+
     if (element.requestFullscreen) element.requestFullscreen();
     else if (element.mozRequestFullScreen) element.mozRequestFullScreen();
     else if (element.webkitRequestFullscreen) element.webkitRequestFullscreen();

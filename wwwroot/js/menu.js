@@ -15,7 +15,7 @@ connection.start().then(function () {
 });
 
 joinButton.addEventListener("click", function (e) {
-    var matchId = document.getElementById("matchId").value;
+    var matchId = document.getElementById("matchId").value.trim();
     connection.invoke("JoinMatch", matchId).catch(function (err) {
         return console.error(err.toString());
     });
