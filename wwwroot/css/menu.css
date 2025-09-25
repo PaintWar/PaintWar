@@ -5,6 +5,7 @@
     align-items: center;
     height: 100vh;
     gap: 1rem;
+    background: transparent;
 }
 
 #menu-container h1 {
@@ -21,3 +22,17 @@
 #menu-container input {
     text-align: center;
 }
+
+body {
+    background-image: url(../images/menuBackground.jpg);
+    height: 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    }
+ #start-btn { 
+    font-size: 40px;
+    font-family: 'Trebuchet MS', sans-serif;
+    background-color: transparent;
+    border: none;
+    }
