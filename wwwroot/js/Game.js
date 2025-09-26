@@ -17,6 +17,8 @@ export class Game {
         this.rows;
         this.cols;
         this.cellGrid = [];
+        this.entities = [];
+        this.animators = [];
     }
 
     setNetwork(network) {
@@ -43,6 +45,47 @@ export class Game {
             }
         }
 
+    const block = new PIXI.Graphics();
+    block.beginFill(0xFFAA00);
+    block.drawRect(-25, -25, 50, 50);
+    block.endFill();
+    block.x = 100;
+    block.y = 100;
+    block.scale.set(1, 1);
+    block.rotation = 0;
+
+    this.renderer.entityLayer.addChild(block);
+    this.entities.push(block);
+
+    // Create animation tracks
+    const moveXTrack = new NumericTrack("x", [
+        { time: 0, value: 100 },
+        { time: 2, value: 400 },
+        { time: 10, value: 100 }
+    ]);
+    const moveYTrack = new NumericTrack("y", [
+        { time: 0, value: 100 },
+        { time: 2, value: 300 },
+        { time: 10, value: 100 }
+    ]);
+    const rotationTrack = new NumericTrack("rotation", [
+        { time: 0, value: 0 },
+        { time: 10, value: Math.PI * 2 }
+    ]);
+    const scaleTrack = new NumericTrack("scale.x", [
+        { time: 0, value: 1 },
+        { time: 2, value: 2 },
+        { time: 10, value: 1 }
+    ]);
+    const scaleYTrack = new NumericTrack("scale.y", scaleTrack.keyframes);
+    const animation = new Animation([moveXTrack, moveYTrack, rotationTrack, scaleTrack, scaleYTrack]);
+
+    // Create animator and play
+    const animator = new Animator(block);
+    animator.play(animation, true); // loop
+    this.animators.push(animator);
+
+
     }
 
     initialize() {
@@ -68,6 +111,8 @@ export class Game {
 
     update() {
         this.camera.move(this.input.mouseX, this.input.mouseY, this.canvasWidth, this.canvasHeight);
+        const deltaTime = this.renderer.app.ticker.deltaMS / 1000; // seconds
+        this.animators.forEach(animator => animator.update(deltaTime))
         // Send paint request to the server here
         if (this.input.leftMouseDown) {
             const x = this.input.mouseX + this.camera.x;
