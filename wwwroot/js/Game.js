@@ -2,6 +2,10 @@ import { Camera } from './Camera.js';
 import { InputHandler } from './InputHandler.js';
 import { Renderer } from './Renderer.js';
 import { Cell } from './Cell.js';
+import {NumericTrack} from './NumericTrack.js';
+import {SpriteTrack} from './SpriteTrack.js';
+import {Animation} from './Animation.js';
+import {Animator} from './Animator.js';
 export class Game {
     constructor(canvasWidth = 2, canvasHeight = 2, cellSize = 8) {
         this.canvasWidth = canvasWidth;
@@ -45,47 +49,47 @@ export class Game {
             }
         }
 
-    const block = new PIXI.Graphics();
-    block.beginFill(0xFFAA00);
-    block.drawRect(-25, -25, 50, 50);
-    block.endFill();
-    block.x = 100;
-    block.y = 100;
-    block.scale.set(1, 1);
-    block.rotation = 0;
+        const block = new PIXI.Graphics();
+        block.beginFill(0xFFAA00);
+        block.drawRect(-25, -25, 50, 50);
+        block.endFill();
+        block.x = 100;
+        block.y = 100;
+        block.scale.set(1, 1);
+        block.rotation = 0;
 
-    this.renderer.entityLayer.addChild(block);
-    this.entities.push(block);
+        this.renderer.entityLayer.addChild(block);
+        this.entities.push(block);
 
-    // Create animation tracks
-    const moveXTrack = new NumericTrack("x", [
-        { time: 0, value: 100 },
-        { time: 2, value: 400 },
-        { time: 10, value: 100 }
-    ]);
-    const moveYTrack = new NumericTrack("y", [
-        { time: 0, value: 100 },
-        { time: 2, value: 300 },
-        { time: 10, value: 100 }
-    ]);
-    const rotationTrack = new NumericTrack("rotation", [
-        { time: 0, value: 0 },
-        { time: 10, value: Math.PI * 2 }
-    ]);
-    const scaleTrack = new NumericTrack("scale.x", [
-        { time: 0, value: 1 },
-        { time: 2, value: 2 },
-        { time: 10, value: 1 }
-    ]);
-    const scaleYTrack = new NumericTrack("scale.y", scaleTrack.keyframes);
-    const animation = new Animation([moveXTrack, moveYTrack, rotationTrack, scaleTrack, scaleYTrack]);
+        const moveXTrack = new NumericTrack("x", [
+            { time: 0, value: 100 },
+            { time: 2, value: 400 },
+            { time: 4, value: 100 }
+            ]
+        );
+        const moveYTrack = new NumericTrack("y", [
+            { time: 0, value: 100 },
+            { time: 2, value: 300 },
+            { time: 4, value: 100 }
+            ]
+        );
+        const rotationTrack = new NumericTrack("rotation", [
+            { time: 0, value: 0 },
+            { time: 4, value: Math.PI * 2 }
+        ]
+    );
+        const scaleTrack = new NumericTrack("scale.x", [
+            { time: 0, value: 1 },
+            { time: 2, value: 2 },
+            { time: 4, value: 1 }
+        ]
+    );
+        const scaleYTrack = new NumericTrack("scale.y", scaleTrack.keyframes);
+        const animation = new Animation([moveXTrack, moveYTrack, rotationTrack, scaleTrack, scaleYTrack], true);
 
-    // Create animator and play
-    const animator = new Animator(block);
-    animator.play(animation, true); // loop
-    this.animators.push(animator);
-
-
+        const animator = new Animator(block);
+        animator.play(animation);
+        this.animators.push(animator);
     }
 
     initialize() {

@@ -1,13 +1,17 @@
-class Animation {
-    constructor(tracks) {
+export class Animation {
+    constructor(tracks, loop = false) {
         this.tracks = tracks;
-        this.duraton = 0;
+        this.duration = 0;
+        this.loop = loop;
         this.tracks.forEach(element => {
-            this.duration = Math.max(this.duration, element.keyFrames[element.keyFrames.length - 1].time);
+            this.duration = Math.max(this.duration, element.keyframes[element.keyframes.length - 1].time);
         });
     }
 
     apply(object, time) {
+        if (this.loop) {
+            time %= this.duration;
+        }
         this.tracks.forEach(track => {
             track.apply(object, time);
         });

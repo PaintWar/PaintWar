@@ -1,4 +1,4 @@
-class Track {
+export class Track {
     constructor(property, keyframes) {
         this.property = property;
         this.keyframes = keyframes;

@@ -1,4 +1,5 @@
-class NumericTrack extends Track {
+import { Track } from "./Track.js";
+export class NumericTrack extends Track {
     getValue(time) {
         let prevFrame = this.keyframes[0];
         let nextFrame = this.keyframes[this.keyframes.length - 1];

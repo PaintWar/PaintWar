@@ -1,4 +1,5 @@
-class SpriteTrack extends Track {
+import { Track } from "./Track.js";
+export class SpriteTrack extends Track {
     getValue(time) {
         let current = this.keyframes[0];
         for (let i = 0; i < this.keyframes.length; i++) {
@@ -6,6 +7,6 @@ class SpriteTrack extends Track {
                 break;
             current = this.keyframes[i];
         }
-        return current;
+        return current.value;
     }
 }
