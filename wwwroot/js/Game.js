@@ -17,6 +17,9 @@ export class Game {
         this.rows;
         this.cols;
         this.cellGrid = [];
+
+        this.playerLifePaint = {};
+        this.playerLifePaintInterval = {};
     }
 
     setNetwork(network) {
@@ -78,6 +81,12 @@ export class Game {
         }
     }
 
+    setLocalPlayer(playerId) {
+        this.localPlayerId = playerId;
+        this.playerLifePaint[playerId] = 100;
+        this.startLifePaintRegen(playerId, 10)
+    }
+
     paintCell(row, col, playerId, color) {
         if (!this.cellGrid[row] || !this.cellGrid[row][col])
             return;
@@ -87,9 +96,40 @@ export class Game {
         if (cell.owner === playerId && cell.owner !== null)
             return;
 
+        
+        
+        if (playerId === this.localPlayerId) {
+            //cost of paint
+            const playerLife = this.playerLifePaint[playerId] ?? 0;
+            if (playerLife < 1)
+                return;
+            
+            this.playerLifePaint[playerId] = playerLife - 1;
+            this.setLifePaint(this.playerLifePaint[playerId]);
+        }
+
         cell.paint(playerId, color);
 
         this.renderer.drawCell(cell);
+    }
+
+    setLifePaint(amount) {
+        //lifepaint cap
+        this.lifePaint = Math.min(amount, 1000);
+        document.getElementById("lifepaint-display").textContent = `LifePaint: ${this.lifePaint}`
+    }
+
+    startLifePaintRegen(playerId, amountPerSecond) {
+        if (!this.playerLifePaint[playerId]) return;
+        if (!this.playerLifePaintInterval) this.playerLifePaintInterval = {}
+        if (this.playerLifePaintInterval[playerId]) clearInterval(this.playerLifePaintInterval[playerId]);
+        
+        this.playerLifePaintInterval[playerId] = setInterval (() => {
+            this.playerLifePaint[playerId] = Math.min(this.playerLifePaint[playerId] + amountPerSecond, 1000);
+
+            if (playerId === this.localPlayerId)
+                this.setLifePaint(this.playerLifePaint[playerId]);
+        }, 1000);
     }
 
     render() {

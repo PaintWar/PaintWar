@@ -1,3 +1,8 @@
 bin
 obj
 wwwroot/js/signalr
+
+# Visual Studio specific
+*.csproj.user
+*.sln
+.vs
