@@ -17,6 +17,8 @@ export class Game {
         this.rows;
         this.cols;
         this.cellGrid = [];
+
+        this.lifePaint = 0;
     }
 
     setNetwork(network) {
@@ -53,6 +55,7 @@ export class Game {
 
     run() {
         this.running = true;
+        this.startLifePaintRegen(10)
         this.gameLoop();
     }
 
@@ -87,9 +90,29 @@ export class Game {
         if (cell.owner === playerId && cell.owner !== null)
             return;
 
+        //cost of paint
+        if (this.lifePaint < 1)
+            return;
+
+        this.setLifePaint(this.lifePaint - 1);
+
         cell.paint(playerId, color);
 
         this.renderer.drawCell(cell);
+    }
+
+    setLifePaint(amount) {
+        //lifepaint cap
+        this.lifePaint = Math.min(amount, 1000);
+        document.getElementById("lifepaint-display").textContent = `LifePaint: ${this.lifePaint}`
+    }
+
+    startLifePaintRegen(amountPerSecond) {
+        if(this.lifePaintInterval) clearInterval(lifePaintInterval);
+        
+        this.lifePaintInterval = setInterval (() => {
+            this.setLifePaint(this.lifePaint + amountPerSecond);
+        }, 1000);
     }
 
     render() {

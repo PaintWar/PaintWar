@@ -9,6 +9,9 @@ export class GameNetwork {
         this.connection.on("CellUpdated", (x, y, playerId, color) => {
             this.game.paintCell(x, y, playerId, color);
         });
+        this.connection.on("LifePaintUpdated", (newAmount) => {
+            this.game.setLifePaint(newAmount);
+        });
     }
     paintCell(row, col) {
         return this.connection.invoke("PaintCell", this.matchId, row, col);
