@@ -87,10 +87,20 @@ export class Game {
         const scaleYTrack = new NumericTrack("scale.y", scaleTrack.keyframes);
         const animation = new Animation([moveXTrack, moveYTrack, scaleTrack, scaleYTrack], true);
         const animation2 = new Animation([rotationTrack], true)
+        const colorTrack = new SpriteTrack("tint", [
+            { time: 0, value: 0xFF0000 }, // red
+            { time: 1, value: 0x00FF00 }, // green
+            { time: 2, value: 0x0000FF }, // blue
+            { time: 3, value: 0xFFFF00 },  // yellow
+            { time: 4, value: 0xFF0000}
+        ]);
 
+        // Wrap into animation
+        const colorAnim = new Animation([colorTrack], true);
         const animator = new Animator(block);
         animator.play(animation);
         animator.play(animation2)
+        animator.play(colorAnim);
         this.animators.push(animator);
     }
 

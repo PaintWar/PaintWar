@@ -29,4 +29,11 @@ export class Animator {
         }
         this.animations = stillRunning;
     }
+    
+    setSpeed(animation, speed) {
+        const anim = this.animations.find(a => a.animation === animation);
+        if (anim) {
+            anim.speed = speed;
+        }
+    }
 }
