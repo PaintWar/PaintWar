@@ -12,6 +12,8 @@ namespace PaintWar.Hubs
             await Groups.AddToGroupAsync(Context.ConnectionId, matchId);
 
             await Clients.Caller.SendAsync("Map", Match.mapWidth, Match.mapHeight, match.Cells);
+
+            await Clients.Caller.SendAsync("PlayerAssigned", Context.ConnectionId);
         }
         public async Task PaintCell(string matchId, int row, int col)
         {
