@@ -9,9 +9,6 @@ export class Animation {
     }
 
     apply(object, time) {
-        if (this.loop) {
-            time %= this.duration;
-        }
         this.tracks.forEach(track => {
             track.apply(object, time);
         });

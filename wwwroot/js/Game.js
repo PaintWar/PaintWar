@@ -64,7 +64,7 @@ export class Game {
         const moveXTrack = new NumericTrack("x", [
             { time: 0, value: 100 },
             { time: 2, value: 400 },
-            { time: 4, value: 100 }
+            { time: 4, value: 100, callback: this.message.bind(this) }
             ]
         );
         const moveYTrack = new NumericTrack("y", [
@@ -85,10 +85,12 @@ export class Game {
         ]
     );
         const scaleYTrack = new NumericTrack("scale.y", scaleTrack.keyframes);
-        const animation = new Animation([moveXTrack, moveYTrack, rotationTrack, scaleTrack, scaleYTrack], true);
+        const animation = new Animation([moveXTrack, moveYTrack, scaleTrack, scaleYTrack], true);
+        const animation2 = new Animation([rotationTrack], true)
 
         const animator = new Animator(block);
         animator.play(animation);
+        animator.play(animation2)
         this.animators.push(animator);
     }
 
@@ -101,6 +103,9 @@ export class Game {
     run() {
         this.running = true;
         this.gameLoop();
+    }
+    message() {
+        console.log("finished loop");
     }
 
     gameLoop() {
@@ -137,7 +142,9 @@ export class Game {
             return;
 
         cell.paint(playerId, color);
-
+        const block = new PIXI.Graphics();
+        block.beginFill(color);
+        
         this.renderer.drawCell(cell);
     }
 
