@@ -2,8 +2,9 @@ import startGame from "./main.js";
 
 var connection = new signalR.HubConnectionBuilder().withUrl("/menuHub").build();
 
-var joinButton = document.getElementById("join-btn");
-var startButton = document.getElementById("start-btn");
+const matchIdInput = document.getElementById("matchId");
+const joinButton = document.getElementById("join-btn");
+const startButton = document.getElementById("start-btn");
 joinButton.disabled = true;
 startButton.disabled = true;
 
@@ -14,19 +15,30 @@ connection.start().then(function () {
     return console.error(err.toString());
 });
 
-joinButton.addEventListener("click", function (e) {
-    var matchId = document.getElementById("matchId").value.trim();
+function joinMatch() {
+    const matchId = document.getElementById("matchId").value.trim();
     connection.invoke("JoinMatch", matchId).catch(function (err) {
         return console.error(err.toString());
     });
-    event.preventDefault();
+}
+
+joinButton.addEventListener("click", e => {
+    joinMatch();
+    e.preventDefault();
+});
+
+matchIdInput.addEventListener("keypress", e => {
+	if (e.key == "Enter") {
+		joinMatch(e);
+        e.preventDefault();
+	}
 });
 
 startButton.addEventListener("click", function (e) {
     connection.invoke("NewMatch").catch(function (err) {
         return console.error(err.toString());
     });
-    event.preventDefault();
+    e.preventDefault();
 });
 
 connection.on("JoinMatch", function (matchId) {
