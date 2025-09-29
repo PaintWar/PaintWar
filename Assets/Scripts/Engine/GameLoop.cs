@@ -53,11 +53,42 @@ public static class GameLoop
 			
 			while(accumulator >= Time.fixedDeltaTime)
 			{
-				foreach (GameObject obj in gameObjects)
+				for (int i=0; i<gameObjects.Count; ++i)
 				{
-					foreach (MonoUpdater upd in obj.updaters)
+					foreach (MonoUpdater upd in gameObjects[i].updaters)
 					{
 						upd.FixedUpdate();
+					}
+					//if this GameObject has a collider, update its collision mask
+					if (gameObjects[i].GetComponent<Collider2D>())
+					{
+						Collider2D col1 = gameObjects[i].GetComponent<Collider2D>();
+						if (col1.isTrigger == false)
+						{
+							for (int j = i + 1; j < gameObjects.Count; ++j)
+							{
+								if (gameObjects[j].GetComponent<Collider2D>() && col1.Collide(gameObjects[j].GetComponent<Collider2D>()))
+								{
+									Collider2D col2 = gameObjects[j].GetComponent<Collider2D>();
+									if (col1.isTrigger || col2.isTrigger)
+									{
+										if (col1.isTrigger) col2.enterTrigger(col1);
+										if (col2.isTrigger) col1.enterTrigger(col2);
+									}
+									else
+									{
+										for (int k = 0; k < Physics2D.MAX_LAYERS; ++k)
+										{
+											if ((col1.gameObject.physicsLayerMask & (1L << k)) != 0) col2.enterMask |= (1L << k);
+											if ((col2.gameObject.physicsLayerMask & (1L << k)) != 0) col1.enterMask |= (1L << k);
+										}
+									}
+								}
+							}
+							col1.collisionMask = col1.enterMask;
+							col1.enterMask = 0;
+							col1.processTriggers();
+						}
 					}
 				}
 				accumulator -= Time.fixedDeltaTime;

@@ -4,7 +4,7 @@ public class Transform
 	List<Transform> childTree = new List<Transform>();
 	public int childCount = 0;
 	public Vector3? position;
-	public Vector3? rotation;
+	public Vector3? rotation; //quaternions...
 	public Vector3? scale;
 
 	public void addChild(Transform t)

@@ -3,7 +3,7 @@ public class MonoUpdater
 	public GameObject? gameObject;
 	public MonoUpdater()
 	{
-		gameObject=null;
+		gameObject = null;
 	}
 	public MonoUpdater(GameObject obj)
 	{
@@ -20,5 +20,9 @@ public class MonoUpdater
 	public virtual void FixedUpdate()
 	{
 		
+	}
+	public static implicit operator bool(MonoUpdater? obj)
+	{
+		return obj!=null;
 	}
 }
