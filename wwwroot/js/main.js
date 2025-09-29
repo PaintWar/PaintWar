@@ -3,10 +3,12 @@ import { GameNetwork } from './GameNetwork.js';
 
 let game;
 
-export default function startGame(connection, matchId) {
-    var menuContainer = document.getElementById('menu-container');
-    menuContainer.style.display = 'none';
+export default function startGame(id) {
+    // Hide lobby
+    var lobbyContainer = document.getElementById('lobby-container');
+    lobbyContainer.style.display = 'none';
 
+    // Un-hide game
     var gameContainer = document.getElementById('game-container');
     gameContainer.style.display = '';
 
@@ -14,8 +16,14 @@ export default function startGame(connection, matchId) {
 
     game = new Game();
     //game.initialize();
-    game.setNetwork(new GameNetwork(connection, matchId, game));
-    game.run();
+
+    var connection = new signalR.HubConnectionBuilder().withUrl("/gameHub?game=" + id).build();
+    connection.start().then(function () {
+        game.setNetwork(new GameNetwork(connection, id, game));
+        game.run();
+    }).catch(function (err) {
+        return console.error(err.toString());
+    });
 }
 
 function enterFullScreen() {

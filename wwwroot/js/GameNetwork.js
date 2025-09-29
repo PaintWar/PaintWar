@@ -3,7 +3,8 @@ export class GameNetwork {
         this.connection = connection;
         this.matchId = matchId;
         this.game = game;
-        this.connection.on("Map", (mapWidth, mapHeight, cells) => {
+        this.connection.on("MapInit", (mapWidth, mapHeight, cells) => {
+            console.log("0");
             this.game.loadMap(mapWidth, mapHeight, cells);
         });
         this.connection.on("CellUpdated", (x, y, playerId, color) => {
