@@ -4,22 +4,35 @@ namespace PaintWar.Hubs
 {
     public class MenuHub : Hub
     {
-        public async Task NewMatch()
+        public async Task NewLobby()
         {
-            Match match = State.matchCreate();
-            await Clients.Caller.SendAsync("JoinMatch", match.Id);
+            Lobby lobby = State.NewLobby();
+            lobby.AddPlayer(new Player("random id", lobby.Players.Count));
+            await Clients.Caller.SendAsync("JoinLobby", lobby.Id);
         }
 
-        public async Task JoinMatch(String matchId)
+        public async Task JoinLobby(string id)
         {
-            if (!State.matchExists(matchId))
+             (bool, string)[] state = {
+                (!State.LobbyExists(id), "JoinFailedNonExistentLobby"),
+                (State.MatchExists(id), "JoinFailedMatchInProgress"),
+                (State.LobbyFull(id) ?? true, "JoinFailedLobbyFull")
+            };
+
+            foreach ((bool failed, string Message) in state)
             {
-                await Clients.Caller.SendAsync("JoinFailed");
+                if (failed)
+                {
+                    await Clients.Caller.SendAsync(Message);
+                    return;
+                }
             }
-            else
-            {
-                await Clients.Caller.SendAsync("JoinMatch", matchId);
-            }
+
+            Lobby? lobby = State.Lobby(id);
+            if (lobby == null) return;
+
+            lobby.AddPlayer(new Player("random id", lobby.Players.Count));
+            await Clients.Caller.SendAsync("JoinLobby", id);
         }
     }
 }

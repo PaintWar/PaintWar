@@ -1,57 +1,91 @@
-import startGame from "./main.js";
+import joinLobby from "./lobby.js";
 
 var connection = new signalR.HubConnectionBuilder().withUrl("/menuHub").build();
 
-const matchIdInput = document.getElementById("matchId");
-const joinButton = document.getElementById("join-btn");
-const startButton = document.getElementById("start-btn");
-joinButton.disabled = true;
-startButton.disabled = true;
+const playerNameInput = document.getElementById("playerNameInput");
+const lobbyIdInput = document.getElementById("lobbyIdInput");
+const playerNameButton = document.getElementById("playerNameButton");
+const joinLobbyButton = document.getElementById("joinLobbyButton");
+const newLobbyButton = document.getElementById("newLobbyButton");
+
+playerNameButton.disabled = true;
+joinLobbyButton.disabled = true;
+newLobbyButton.disabled = true;
 
 connection.start().then(function () {
-    joinButton.disabled = false;
-    startButton.disabled = false;
+    playerNameButton.disabled = false;
+    joinLobbyButton.disabled = false;
+    newLobbyButton.disabled = false;
 }).catch(function (err) {
     return console.error(err.toString());
 });
 
-function joinMatch() {
-    const matchId = document.getElementById("matchId").value.trim();
-    connection.invoke("JoinMatch", matchId).catch(function (err) {
-        return console.error(err.toString());
-    });
+if (localStorage.getItem("UUID") == null) {
+    localStorage.setItem("UUID", crypto.randomUUID());
 }
 
-joinButton.addEventListener("click", e => {
-    joinMatch();
+if (localStorage.getItem("playerName") == null) {
+    // set random name
+}
+
+playerNameInput.value = localStorage.getItem("playerName");
+
+function setName() {
+    const name = playerNameInput.value.trim();
+    localStorage.setItem("playerName", name);
+    playerNameInput.value = name;
+}
+
+joinLobbyButton.addEventListener("click", e => {
+    setName();
     e.preventDefault();
 });
 
-matchIdInput.addEventListener("keypress", e => {
+lobbyIdInput.addEventListener("keypress", e => {
 	if (e.key == "Enter") {
-		joinMatch(e);
+        setName();
         e.preventDefault();
 	}
 });
 
-startButton.addEventListener("click", function (e) {
-    connection.invoke("NewMatch").catch(function (err) {
+function joinLobbyRequest() {
+    const lobbyId = lobbyIdInput.value.trim();
+    connection.invoke("JoinLobby", lobbyId).catch(function (err) {
+        return console.error(err.toString());
+    });
+}
+
+joinLobbyButton.addEventListener("click", e => {
+    joinLobbyRequest();
+    e.preventDefault();
+});
+
+lobbyIdInput.addEventListener("keypress", e => {
+	if (e.key == "Enter") {
+		joinLobbyRequest();
+        e.preventDefault();
+	}
+});
+
+newLobbyButton.addEventListener("click", function (e) {
+    connection.invoke("NewLobby").catch(function (err) {
         return console.error(err.toString());
     });
     e.preventDefault();
 });
 
-connection.on("JoinMatch", function (matchId) {
-    console.log("Joined game: " + matchId);
-    document.getElementById("matchIdText").textContent = matchId;
-
-    var gameConnection = new signalR.HubConnectionBuilder().withUrl("/gameHub").build();
-    gameConnection.start().then(() => {
-        gameConnection.invoke("JoinMatch", matchId);
-        startGame(gameConnection, matchId);
-    });
+connection.on("JoinLobby", function (id) {
+    joinLobby(id);
 });
 
-connection.on("JoinFailed", function () {
-    console.log("Failed to join game");
+connection.on("JoinFailedNonExistentLobby", function () {
+    console.log("Failed to join lobby, no such lobby");
+});
+
+connection.on("JoinFailedMatchInProgress", function () {
+    console.log("Failed to join lobby, match already started");
+});
+
+connection.on("JoinFailedLobbyFull", function () {
+    console.log("Failed to join lobby, lobby is full");
 });
