@@ -9,23 +9,41 @@
 <body>
     <div id="menu-container">
         <h1>PAINT WAR</h1>
-        <button id="start-btn">New Game</button>
+        <button id="newLobbyButton">New Game</button>
         <div>
-            <input name="matchId" type="text" id="matchId" placeholder="Match Code"></input>
-            <button id="join-btn">Join</button>
+            <input type="text" id="lobbyIdInput" placeholder="Lobby Code"></input>
+            <button id="joinLobbyButton">Join</button>
+        </div>
+        <div>
+            <input type="text" id="playerNameInput" placeholder="Name"></input>
+            <button id="playerNameButton">Set</button>
         </div>
     </div>
 
+    <div id="lobby-container">
+        <div id="lobbyId">
+            <label for="lobbyIdText">Lobby ID: </label>
+            <span name="lobbyIdText" id="lobbyIdText">PLACEHOLDER</span>
+            <!-- clipboard requires secure context, aka https, so we aint getting this for a while o7 -->
+            <button onclick="navigator.clipboard.writeText(document.getElementById('lobbyIdText').textContent)">Copy</button>
+        </div>
+        <ol id="playerList">
+            <li>PLACEHOLDER</li>
+            <li>PLACEHOLDER</li>
+            <li>PLACEHOLDER</li>
+            <li>PLACEHOLDER</li>
+        </ol>
+        <button id="startGameButton">Start Match</button>
+    </div>
+
     <div id="game-container" style="display: none;">
-        <label for="matchIdText">Match id:</label>
-        <span name="matchIdText" id="matchIdText"></span>
         <div id="canvas-container">
             <canvas id="grid-canvas"></canvas>
         </div>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/7.3.0/pixi.min.js"></script>
     <script src="/js/signalr/dist/browser/signalr.js"></script>
-    <script type="module" src="js/main.js"></script>
+    <!-- <script type="module" src="js/main.js"></script> -->
     <script type="module" src="js/menu.js"></script>
 </body>
 </html>
