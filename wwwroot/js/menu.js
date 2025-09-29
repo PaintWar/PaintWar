@@ -40,6 +40,17 @@ connection.on("JoinMatch", function (matchId) {
     });
 });
 
+var globalAlertFailedToJoinTimer = null;
 connection.on("JoinFailed", function () {
-    console.log("Failed to join game");
+    const DELAY_MS = 5000;
+    const alertFailedToJoin = document.getElementById("alertFailedToJoin");
+    const matchId = document.getElementById("matchId").value.trim();
+
+    alertFailedToJoin.innerText = "Failed to join match with code: " + matchId;
+    alertFailedToJoin.style.display = "flex";
+
+    clearTimeout(globalAlertFailedToJoinTimer);
+    globalAlertFailedToJoinTimer = setTimeout(() => {
+        alertFailedToJoin.style.display = "none";
+    }, DELAY_MS)
 });
