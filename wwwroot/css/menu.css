@@ -36,16 +36,3 @@ body {
     background-color: transparent;
     border: none;
     }
-
-#alertFailedToJoin {
-    display: none;
-    background-color: red;
-    color: black;
-    font-size: 32pt;
-    position: absolute;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    height: 10%;
-    bottom: 0;
-}

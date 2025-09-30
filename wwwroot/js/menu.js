@@ -1,4 +1,5 @@
 import startGame from "./main.js";
+import createAlert from "./alert.js";
 
 var connection = new signalR.HubConnectionBuilder().withUrl("/menuHub").build();
 
@@ -40,17 +41,7 @@ connection.on("JoinMatch", function (matchId) {
     });
 });
 
-var globalAlertFailedToJoinTimer = null;
 connection.on("JoinFailed", function () {
-    const DELAY_MS = 5000;
-    const alertFailedToJoin = document.getElementById("alertFailedToJoin");
     const matchId = document.getElementById("matchId").value.trim();
-
-    alertFailedToJoin.innerText = "Failed to join match with code: " + matchId;
-    alertFailedToJoin.style.display = "flex";
-
-    clearTimeout(globalAlertFailedToJoinTimer);
-    globalAlertFailedToJoinTimer = setTimeout(() => {
-        alertFailedToJoin.style.display = "none";
-    }, DELAY_MS)
+    createAlert("Failed to join game with id: " + matchId);
 });
