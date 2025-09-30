@@ -1,6 +1,6 @@
 import joinLobby from "./lobby.js";
 
-var connection = new signalR.HubConnectionBuilder().withUrl("/menuHub").build();
+var connection = new signalR.HubConnectionBuilder().withUrl("/menuHub").withAutomaticReconnect().build();
 
 const playerNameInput = document.getElementById("playerNameInput");
 const lobbyIdInput = document.getElementById("lobbyIdInput");
@@ -36,21 +36,25 @@ function setName() {
     playerNameInput.value = name;
 }
 
-joinLobbyButton.addEventListener("click", e => {
+playerNameButton.addEventListener("click", e => {
     setName();
     e.preventDefault();
 });
 
-lobbyIdInput.addEventListener("keypress", e => {
+playerNameInput.addEventListener("keypress", e => {
 	if (e.key == "Enter") {
         setName();
         e.preventDefault();
 	}
 });
 
+playerNameInput.addEventListener("focus", () => {
+    playerNameInput.select();
+})
+
 function joinLobbyRequest() {
     const lobbyId = lobbyIdInput.value.trim();
-    connection.invoke("JoinLobby", lobbyId).catch(function (err) {
+    connection.invoke("JoinLobby", lobbyId, localStorage.getItem("UUID"), localStorage.getItem("playerName")).catch(function (err) {
         return console.error(err.toString());
     });
 }
@@ -60,6 +64,10 @@ joinLobbyButton.addEventListener("click", e => {
     e.preventDefault();
 });
 
+lobbyIdInput.addEventListener("focus", () => {
+    lobbyIdInput.select();
+})
+
 lobbyIdInput.addEventListener("keypress", e => {
 	if (e.key == "Enter") {
 		joinLobbyRequest();
@@ -68,7 +76,7 @@ lobbyIdInput.addEventListener("keypress", e => {
 });
 
 newLobbyButton.addEventListener("click", function (e) {
-    connection.invoke("NewLobby").catch(function (err) {
+    connection.invoke("NewLobby", localStorage.getItem("UUID"), localStorage.getItem("playerName")).catch(function (err) {
         return console.error(err.toString());
     });
     e.preventDefault();

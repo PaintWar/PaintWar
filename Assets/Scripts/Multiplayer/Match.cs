@@ -3,7 +3,7 @@ public class Match
     public string Id { get; }
     public List<Player> Players = new List<Player>();
 
-    // public Match(Lobby lobby) => (Id, Players) = (lobby.Id, lobby.Players);
+    public Player? Player(string id) => Players.FirstOrDefault((player) => player.Id == id);
 
     public Match(Lobby lobby)
     {

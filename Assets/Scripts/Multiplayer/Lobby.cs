@@ -5,10 +5,20 @@ public class Lobby
 
     public Lobby() => Id = Utils.RandomId();
 
-    public void AddPlayer(Player player)
+    public bool AddPlayer(Player player)
     {
-        if (!Full)
-            Players.Add(player);
+        if (Full)
+        {
+            return false;
+        }
+
+        if (Players.Any((p) => p.Id == player.Id))
+        {
+            return false;
+        }
+
+        Players.Add(player);
+        return true;
     }
 
     public bool Full => Players.Count >= Constants.MaximumPlayerCount;

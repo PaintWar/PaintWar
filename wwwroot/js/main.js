@@ -17,7 +17,7 @@ export default function startGame(id) {
     game = new Game();
     //game.initialize();
 
-    var connection = new signalR.HubConnectionBuilder().withUrl("/gameHub?game=" + id).build();
+    var connection = new signalR.HubConnectionBuilder().withUrl("/gameHub?game=" + id).withAutomaticReconnect().build();
     connection.start().then(function () {
         game.setNetwork(new GameNetwork(connection, id, game));
         game.run();

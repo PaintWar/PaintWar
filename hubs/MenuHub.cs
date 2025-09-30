@@ -4,35 +4,37 @@ namespace PaintWar.Hubs
 {
     public class MenuHub : Hub
     {
-        public async Task NewLobby()
+        public async Task NewLobby(string playerId, string playerName)
         {
             Lobby lobby = State.NewLobby();
-            lobby.AddPlayer(new Player("random id", lobby.Players.Count));
-            await Clients.Caller.SendAsync("JoinLobby", lobby.Id);
+            if (lobby.AddPlayer(new Player(playerId, playerName, lobby.Players.Count)))
+            {
+                await Clients.Caller.SendAsync("JoinLobby", lobby.Id);
+            }
         }
 
-        public async Task JoinLobby(string id)
+        public async Task JoinLobby(string lobbyId, string playerId, string playerName)
         {
              (bool, string)[] state = {
-                (!State.LobbyExists(id), "JoinFailedNonExistentLobby"),
-                (State.MatchExists(id), "JoinFailedMatchInProgress"),
-                (State.LobbyFull(id) ?? true, "JoinFailedLobbyFull")
+                (!State.LobbyExists(lobbyId), "JoinFailedNonExistentLobby"),
+                (State.MatchExists(lobbyId), "JoinFailedMatchInProgress"),
+                (State.LobbyFull(lobbyId) ?? true, "JoinFailedLobbyFull")
             };
 
-            foreach ((bool failed, string Message) in state)
+            foreach ((bool failed, string message) in state)
             {
                 if (failed)
                 {
-                    await Clients.Caller.SendAsync(Message);
+                    await Clients.Caller.SendAsync(message);
                     return;
                 }
             }
 
-            Lobby? lobby = State.Lobby(id);
+            Lobby? lobby = State.Lobby(lobbyId);
             if (lobby == null) return;
 
-            lobby.AddPlayer(new Player("random id", lobby.Players.Count));
-            await Clients.Caller.SendAsync("JoinLobby", id);
+            lobby.AddPlayer(new Player(playerId, playerName, lobby.Players.Count));
+            await Clients.Caller.SendAsync("JoinLobby", lobbyId);
         }
     }
 }

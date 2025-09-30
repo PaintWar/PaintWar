@@ -17,28 +17,41 @@ namespace PaintWar.Hubs
         override public async Task OnConnectedAsync()
         {
             await Groups.AddToGroupAsync(Context.ConnectionId, GetLobbyGroupName());
+
+            string? id = GetLobbyId();
+            if (id == null) return;
+
+            Lobby? lobby = State.Lobby(id);
+            if (lobby == null) return;
+
+            await Clients.Group(GetLobbyGroupName()).SendAsync("UpdatePlayerList", lobby.Players);
             await base.OnConnectedAsync();
         }
 
         public async Task StartMatch(string playerId)
         {
-            Lobby? lobby = State.Lobby(GetLobbyId() ?? "Trust me bro");
-            if (lobby == null) return;
-            var players = lobby.Players;
+            string? id = GetLobbyId();
+            if (id == null) return;
 
-            if (!(players?.First().Id == playerId))
+            Lobby? lobby = State.Lobby(id);
+            if (lobby == null) return;
+
+            (bool, string)[] state = {
+                (playerId != lobby.Players.First().Id, "FailedNotHost"),
+                (lobby.Players.Count <= 1, "FailedNotEnoughPlayers")
+            };
+
+            foreach ((bool failed, string message) in state)
             {
-                await Clients.Group(GetLobbyGroupName()).SendAsync("FailedNotHost");
+                if (failed)
+                {
+                    await Clients.Caller.SendAsync(message);
+                    return;
+                }
             }
-            else if (players?.Count <= 1)
-            {
-                await Clients.Group(GetLobbyGroupName()).SendAsync("FailedNotEnoughPlayers");
-            }
-            else
-            {
-                State.StartMatch(lobby);
-                await Clients.Group(GetLobbyGroupName()).SendAsync("MatchStart");
-            }
+
+            State.StartMatch(lobby);
+            await Clients.Group(GetLobbyGroupName()).SendAsync("MatchStart");
         }
 
         // Color selection should probably be handled here

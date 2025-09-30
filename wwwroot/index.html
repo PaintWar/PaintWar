@@ -24,14 +24,10 @@
         <div id="lobbyId">
             <label for="lobbyIdText">Lobby ID: </label>
             <span name="lobbyIdText" id="lobbyIdText">PLACEHOLDER</span>
-            <!-- clipboard requires secure context, aka https, so we aint getting this for a while o7 -->
+            <!-- clipboard requires secure context, a.k.a. https or localhost -->
             <button onclick="navigator.clipboard.writeText(document.getElementById('lobbyIdText').textContent)">Copy</button>
         </div>
         <ol id="playerList">
-            <li>PLACEHOLDER</li>
-            <li>PLACEHOLDER</li>
-            <li>PLACEHOLDER</li>
-            <li>PLACEHOLDER</li>
         </ol>
         <button id="startGameButton">Start Match</button>
     </div>
