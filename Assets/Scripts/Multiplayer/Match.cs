@@ -23,5 +23,4 @@ public class Match
     // Maybe these hardcoded values shouldn't be here
     public const int mapWidth = 250, mapHeight = 250;
     public List<List<Cell>> Cells { get; } = new List<List<Cell>>();
-    public List<int> Colors = new List<int> { 0xff0000, 0x0000ff };
 }
