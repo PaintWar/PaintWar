@@ -27,17 +27,17 @@ export default function joinLobby(id, p) {
 }
 
 function setupConnection(connection, id) {
-    connection.start().then(function () {
+    connection.start().then(() => {
         startGameButton.disabled = false;
-    }).catch(function (err) {
+    }).catch((err) => {
         return console.error(err.toString());
     });
 
-    connection.on("MatchStart", function () {
+    connection.on("MatchStart", () => {
         startGame(id, player);
     })
 
-    connection.on("UpdatePlayerList", function (players) {
+    connection.on("UpdatePlayerList", (players) => {
         playerList.innerHTML = "";
         players.forEach((p) => {
             var temp = document.createElement("li");
@@ -46,16 +46,16 @@ function setupConnection(connection, id) {
         });
     })
 
-    connection.on("FailedNotHost", function () {
+    connection.on("FailedNotHost", () => {
         console.log("Not host");
     })
 
-    connection.on("FailedNotEnoughPlayers", function () {
+    connection.on("FailedNotEnoughPlayers", () => {
         console.log("Not enough players");
     })
 
-    startGameButton.addEventListener("click", e => {
-        connection.invoke("StartMatch", player.UUID).catch(function (err) {
+    startGameButton.addEventListener("click", (e) => {
+        connection.invoke("StartMatch", player.UUID).catch((err) => {
             return console.error(err.toString());
         });
     })

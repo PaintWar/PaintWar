@@ -15,21 +15,21 @@ playerNameButton.disabled = true;
 joinLobbyButton.disabled = true;
 newLobbyButton.disabled = true;
 
-connection.start().then(function () {
+connection.start().then(() => {
     playerNameButton.disabled = false;
     joinLobbyButton.disabled = false;
     newLobbyButton.disabled = false;
-}).catch(function (err) {
+}).catch((err) => {
     return console.error(err.toString());
 });
 
-connection.on("Development", function () {
+connection.on("Development", () => {
     localStorage.clear();
     player = new Player(generateNewName(), crypto.randomUUID());
     playerNameInput.value = player.name;
 })
 
-connection.on("Production", function () {
+connection.on("Production", () => {
     if (localStorage.getItem("UUID") == null) {
         localStorage.setItem("UUID", crypto.randomUUID());
     }
@@ -58,12 +58,12 @@ function setName() {
     playerNameInput.value = player.name;
 }
 
-playerNameButton.addEventListener("click", e => {
+playerNameButton.addEventListener("click", (e) => {
     setName();
     e.preventDefault();
 });
 
-playerNameInput.addEventListener("keypress", e => {
+playerNameInput.addEventListener("keypress", (e) => {
 	if (e.key == "Enter") {
         setName();
         e.preventDefault();
@@ -76,12 +76,12 @@ playerNameInput.addEventListener("focus", () => {
 
 function joinLobbyRequest() {
     const lobbyId = lobbyIdInput.value.trim();
-    connection.invoke("JoinLobby", lobbyId, player.UUID, player.name).catch(function (err) {
+    connection.invoke("JoinLobby", lobbyId, player.UUID, player.name).catch((err) => {
         return console.error(err.toString());
     });
 }
 
-joinLobbyButton.addEventListener("click", e => {
+joinLobbyButton.addEventListener("click", (e) => {
     joinLobbyRequest();
     e.preventDefault();
 });
@@ -90,32 +90,32 @@ lobbyIdInput.addEventListener("focus", () => {
     lobbyIdInput.select();
 })
 
-lobbyIdInput.addEventListener("keypress", e => {
+lobbyIdInput.addEventListener("keypress", (e) => {
 	if (e.key == "Enter") {
 		joinLobbyRequest();
         e.preventDefault();
 	}
 });
 
-newLobbyButton.addEventListener("click", function (e) {
-    connection.invoke("NewLobby", player.UUID, player.name).catch(function (err) {
+newLobbyButton.addEventListener("click", (e) => {
+    connection.invoke("NewLobby", player.UUID, player.name).catch((err) => {
         return console.error(err.toString());
     });
     e.preventDefault();
 });
 
-connection.on("JoinLobby", function (id) {
+connection.on("JoinLobby", (id) => {
     joinLobby(id, player);
 });
 
-connection.on("JoinFailedNonExistentLobby", function () {
+connection.on("JoinFailedNonExistentLobby", () => {
     console.log("Failed to join lobby, no such lobby");
 });
 
-connection.on("JoinFailedMatchInProgress", function () {
+connection.on("JoinFailedMatchInProgress", () => {
     console.log("Failed to join lobby, match already started");
 });
 
-connection.on("JoinFailedLobbyFull", function () {
+connection.on("JoinFailedLobbyFull", () => {
     console.log("Failed to join lobby, lobby is full");
 });
