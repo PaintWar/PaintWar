@@ -1,5 +1,5 @@
 import startGame from "./main.js";
-import createAlert from "./alert.js";
+import requestAlert from "./alert.js";
 
 var connection = new signalR.HubConnectionBuilder().withUrl("/menuHub").build();
 
@@ -43,5 +43,5 @@ connection.on("JoinMatch", function (matchId) {
 
 connection.on("JoinFailed", function () {
     const matchId = document.getElementById("matchId").value.trim();
-    createAlert("Failed to join game with id: " + matchId);
+    requestAlert("Failed to join game with id: " + matchId);
 });

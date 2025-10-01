@@ -43,4 +43,5 @@ body {
     border: black;
     border-width: 1px;
     border-style: solid;
+    pointer-events: auto;
 }
