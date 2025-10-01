@@ -17,17 +17,17 @@ namespace PaintWar.Hubs
             await base.OnConnectedAsync();
         }
 
-        public async Task NewLobby(string playerId, string playerName)
+        public async Task NewLobby(string privateId, string publicId, string name)
         {
             Lobby lobby = State.NewLobby();
-            bool successfullyAddedPlayer = lobby.AddPlayer(new Player(playerId, playerName, lobby.Players.Count));
+            bool successfullyAddedPlayer = lobby.AddPlayer(privateId, publicId, name, lobby.Players.Count());
             if (successfullyAddedPlayer)
             {
                 await Clients.Caller.SendAsync("JoinLobby", lobby.Id);
             }
         }
 
-        public async Task JoinLobby(string lobbyId, string playerId, string playerName)
+        public async Task JoinLobby(string lobbyId, string privateId, string publicId, string name)
         {
             (bool, string)[] state = {
                 (!State.LobbyExists(lobbyId), "JoinFailedNonExistentLobby"),
@@ -47,7 +47,7 @@ namespace PaintWar.Hubs
             Lobby? lobby = State.Lobby(lobbyId);
             if (lobby == null) return;
 
-            bool successfullyAddedPlayer = lobby.AddPlayer(new Player(playerId, playerName, lobby.Players.Count));
+            bool successfullyAddedPlayer = lobby.AddPlayer(privateId, publicId, name, lobby.Players.Count());
             if (successfullyAddedPlayer)
             {
                 await Clients.Caller.SendAsync("JoinLobby", lobby.Id);

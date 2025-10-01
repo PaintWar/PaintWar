@@ -1,6 +1,7 @@
 export default class Player {
-    constructor(name, UUID) {
+    constructor(name, privateId, publicId) {
         this.name = name;
-        this.UUID = UUID;
+        this.privateId = privateId;
+        this.publicId = publicId;
     }
 }

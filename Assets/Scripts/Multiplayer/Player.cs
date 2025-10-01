@@ -1,7 +1,10 @@
 public class Player
 {
-    public string Id { get; }
+    public string PrivateId { get; }
+    public string PublicId { get; }
     public string Name { get; }
     public int Number { get; }
-    public Player(string id, string name, int number) => (Id, Name, Number) = (id, name, number);
+
+    public Player(string privateId, string publicId, string name, int number)
+        => (PrivateId, PublicId, Name, Number) = (privateId, publicId, name, number);
 }

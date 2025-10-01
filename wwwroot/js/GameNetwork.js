@@ -12,6 +12,6 @@ export class GameNetwork {
         });
     }
     paintCell(row, col) {
-        return this.connection.invoke("PaintCell", this.matchId, this.player.UUID, row, col);
+        return this.connection.invoke("PaintCell", this.matchId, this.player.privateId, row, col);
     }
 }

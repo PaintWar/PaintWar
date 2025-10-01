@@ -28,19 +28,19 @@ namespace PaintWar.Hubs
             await base.OnConnectedAsync();
         }
 
-        public async Task PaintCell(string matchId, string playerId, int row, int col)
+        public async Task PaintCell(string matchId, string privateId, int row, int col)
         {
             Match? match = State.Match(matchId);
             if (match == null) return;
 
-            Player? player = match.Player(playerId);
+            Player? player = match.Player(privateId);
             if (player == null) return;
 
             if (row < 0 || col >= Match.mapWidth || row < 0 || row >= Match.mapHeight) return;
-            if (match.Cells[row][col].OwnerId == player.Id) return;
-            match.Cells[row][col].OwnerId = player.Id;
+            if (match.Cells[row][col].OwnerId == player.PrivateId) return;
+            match.Cells[row][col].OwnerId = player.PrivateId;
             match.Cells[row][col].Color = Constants.Colors[player.Number];
-            await Clients.Group(GetGameGroupName()).SendAsync("CellUpdated", row, col, player.Id, Constants.Colors[player.Number]);
+            await Clients.Group(GetGameGroupName()).SendAsync("CellUpdated", row, col, player.PublicId, Constants.Colors[player.Number]);
         }
     }
 }

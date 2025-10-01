@@ -24,7 +24,8 @@ namespace PaintWar.Hubs
             Lobby? lobby = State.Lobby(id);
             if (lobby == null) return;
 
-            await Clients.Group(GetLobbyGroupName()).SendAsync("UpdatePlayerList", lobby.Players);
+            await Clients.Group(GetLobbyGroupName()).SendAsync("UpdatePlayerList",
+                                lobby.Players.Select((player) => new { player.PublicId, player.Name, player.Number }));
             await base.OnConnectedAsync();
         }
 
@@ -37,7 +38,7 @@ namespace PaintWar.Hubs
             if (lobby == null) return;
 
             (bool, string)[] state = {
-                (playerId != lobby.Players.First().Id, "FailedNotHost"),
+                (playerId != lobby.Players.First().PrivateId, "FailedNotHost"),
                 (lobby.Players.Count <= 1, "FailedNotEnoughPlayers")
             };
 

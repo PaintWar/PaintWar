@@ -6,9 +6,9 @@ public static class State
     public static Match? Match(string id) => Matches.FirstOrDefault((match) => match.Id == id);
     public static Lobby? Lobby(string id) => Lobbies.FirstOrDefault((lobby) => lobby.Id == id);
 
-    public static bool MatchExists(string id) => Matches.Any((m) => m.Id == id);
+    public static bool MatchExists(string id) => Matches.Any((match) => match.Id == id);
     public static bool MatchExists(Match match) => MatchExists(match.Id);
-    public static bool LobbyExists(string id) => Lobbies.Any((m) => m.Id == id);
+    public static bool LobbyExists(string id) => Lobbies.Any((lobby) => lobby.Id == id);
     public static bool LobbyExists(Lobby lobby) => LobbyExists(lobby.Id);
 
     public static bool? LobbyFull(string id) => Lobby(id)?.Full;

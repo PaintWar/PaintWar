@@ -25,20 +25,24 @@ connection.start().then(() => {
 
 connection.on("Development", () => {
     localStorage.clear();
-    player = new Player(generateNewName(), crypto.randomUUID());
+    player = new Player(generateNewName(), crypto.randomUUID(), crypto.randomUUID());
     playerNameInput.value = player.name;
 })
 
 connection.on("Production", () => {
-    if (localStorage.getItem("UUID") == null) {
-        localStorage.setItem("UUID", crypto.randomUUID());
+    if (localStorage.getItem("privateId") == null) {
+        localStorage.setItem("privateId", crypto.randomUUID());
     }
 
-    if (localStorage.getItem("playerName") == null) {
-        localStorage.setItem("playerName", generateNewName());
+    if (localStorage.getItem("publicId") == null) {
+        localStorage.setItem("publicId", crypto.randomUUID());
     }
 
-    player = new Player(localStorage.getItem("playerName"), localStorage.getItem("UUID"))
+    if (localStorage.getItem("name") == null) {
+        localStorage.setItem("name", generateNewName());
+    }
+
+    player = new Player(localStorage.getItem("name"), localStorage.getItem("privateId"), localStorage.getItem("publicId"));
     playerNameInput.value = player.name;
 })
 
@@ -54,7 +58,7 @@ function generateNewName() {
 
 function setName() {
     player.name = playerNameInput.value.trim();
-    localStorage.setItem("playerName", player.name);
+    localStorage.setItem("name", player.name);
     playerNameInput.value = player.name;
 }
 
@@ -76,7 +80,7 @@ playerNameInput.addEventListener("focus", () => {
 
 function joinLobbyRequest() {
     const lobbyId = lobbyIdInput.value.trim();
-    connection.invoke("JoinLobby", lobbyId, player.UUID, player.name).catch((err) => {
+    connection.invoke("JoinLobby", lobbyId, player.privateId, player.publicId, player.name).catch((err) => {
         return console.error(err.toString());
     });
 }
@@ -98,7 +102,7 @@ lobbyIdInput.addEventListener("keypress", (e) => {
 });
 
 newLobbyButton.addEventListener("click", (e) => {
-    connection.invoke("NewLobby", player.UUID, player.name).catch((err) => {
+    connection.invoke("NewLobby", player.privateId, player.publicId, player.name).catch((err) => {
         return console.error(err.toString());
     });
     e.preventDefault();

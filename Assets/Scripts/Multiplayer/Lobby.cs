@@ -5,19 +5,19 @@ public class Lobby
 
     public Lobby() => Id = Utils.RandomId();
 
-    public bool AddPlayer(Player player)
+    public bool AddPlayer(string privateId, string publicId, string name, int number)
     {
         if (Full)
         {
             return false;
         }
 
-        if (Players.Any((p) => p.Id == player.Id))
+        if (Players.Any((player) => player.PrivateId == privateId || player.PublicId == publicId))
         {
             return false;
         }
 
-        Players.Add(player);
+        Players.Add(new Player(privateId, publicId, name, number));
         return true;
     }
 

@@ -41,7 +41,7 @@ function setupConnection(connection, id) {
         playerList.innerHTML = "";
         players.forEach((p) => {
             var temp = document.createElement("li");
-            temp.innerText = p.name + (p.id == player.UUID ? " (YOU)" : "");
+            temp.innerText = p.name + (p.publicId == player.publicId ? " (YOU)" : "");
             playerList.appendChild(temp);
         });
     })
@@ -55,7 +55,7 @@ function setupConnection(connection, id) {
     })
 
     startGameButton.addEventListener("click", (e) => {
-        connection.invoke("StartMatch", player.UUID).catch((err) => {
+        connection.invoke("StartMatch", player.privateId).catch((err) => {
             return console.error(err.toString());
         });
     })
