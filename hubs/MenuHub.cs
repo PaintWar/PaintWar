@@ -2,12 +2,26 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace PaintWar.Hubs
 {
-    public class MenuHub : Hub
+    public class MenuHub(IWebHostEnvironment env) : Hub
     {
+        override public async Task OnConnectedAsync()
+        {
+            if (env.IsDevelopment())
+            {
+                await Clients.Caller.SendAsync("Development");
+            }
+            else
+            {
+                await Clients.Caller.SendAsync("Production");
+            }
+            await base.OnConnectedAsync();
+        }
+
         public async Task NewLobby(string playerId, string playerName)
         {
             Lobby lobby = State.NewLobby();
-            if (lobby.AddPlayer(new Player(playerId, playerName, lobby.Players.Count)))
+            bool successfullyAddedPlayer = lobby.AddPlayer(new Player(playerId, playerName, lobby.Players.Count));
+            if (successfullyAddedPlayer)
             {
                 await Clients.Caller.SendAsync("JoinLobby", lobby.Id);
             }
@@ -15,7 +29,7 @@ namespace PaintWar.Hubs
 
         public async Task JoinLobby(string lobbyId, string playerId, string playerName)
         {
-             (bool, string)[] state = {
+            (bool, string)[] state = {
                 (!State.LobbyExists(lobbyId), "JoinFailedNonExistentLobby"),
                 (State.MatchExists(lobbyId), "JoinFailedMatchInProgress"),
                 (State.LobbyFull(lobbyId) ?? true, "JoinFailedLobbyFull")
@@ -33,8 +47,11 @@ namespace PaintWar.Hubs
             Lobby? lobby = State.Lobby(lobbyId);
             if (lobby == null) return;
 
-            lobby.AddPlayer(new Player(playerId, playerName, lobby.Players.Count));
-            await Clients.Caller.SendAsync("JoinLobby", lobbyId);
+            bool successfullyAddedPlayer = lobby.AddPlayer(new Player(playerId, playerName, lobby.Players.Count));
+            if (successfullyAddedPlayer)
+            {
+                await Clients.Caller.SendAsync("JoinLobby", lobby.Id);
+            }
         }
     }
 }

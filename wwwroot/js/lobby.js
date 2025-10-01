@@ -1,10 +1,16 @@
 import startGame from "./main.js";
 
+let player;
+
 const startGameButton = document.getElementById("startGameButton");
 const lobbyIdText = document.getElementById("lobbyIdText");
 const playerList = document.getElementById("playerList");
 
-export default function joinLobby(id) {
+export default function joinLobby(id, p) {
+    player = p;
+
+    console.log(globalThis.player);
+
     startGameButton.disabled = true;
     lobbyIdText.textContent = id;
 
@@ -28,14 +34,14 @@ function setupConnection(connection, id) {
     });
 
     connection.on("MatchStart", function () {
-        startGame(id);
+        startGame(id, player);
     })
 
     connection.on("UpdatePlayerList", function (players) {
         playerList.innerHTML = "";
         players.forEach((p) => {
             var temp = document.createElement("li");
-            temp.innerText = p.name + (p.id == localStorage.getItem("UUID") ? " (YOU)" : "");
+            temp.innerText = p.name + (p.id == player.UUID ? " (YOU)" : "");
             playerList.appendChild(temp);
         });
     })
@@ -49,7 +55,7 @@ function setupConnection(connection, id) {
     })
 
     startGameButton.addEventListener("click", e => {
-        connection.invoke("StartMatch", localStorage.getItem("UUID")).catch(function (err) {
+        connection.invoke("StartMatch", player.UUID).catch(function (err) {
             return console.error(err.toString());
         });
     })

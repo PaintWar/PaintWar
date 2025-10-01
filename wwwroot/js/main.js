@@ -3,7 +3,7 @@ import { GameNetwork } from './GameNetwork.js';
 
 let game;
 
-export default function startGame(id) {
+export default function startGame(id, player) {
     // Hide lobby
     var lobbyContainer = document.getElementById('lobby-container');
     lobbyContainer.style.display = 'none';
@@ -19,7 +19,7 @@ export default function startGame(id) {
 
     var connection = new signalR.HubConnectionBuilder().withUrl("/gameHub?game=" + id).withAutomaticReconnect().build();
     connection.start().then(function () {
-        game.setNetwork(new GameNetwork(connection, id, game));
+        game.setNetwork(new GameNetwork(connection, id, game, player));
         game.run();
     }).catch(function (err) {
         return console.error(err.toString());
