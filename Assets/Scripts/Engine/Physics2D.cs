@@ -5,13 +5,28 @@ public static class Physics2D
 	public const int oo = unchecked((1 << 31) - 1);
 	public const float oof = unchecked((1 << 31) - 1);
 	public const float Epsilon = 1e-32f; //uses Equalsf for float equality comparisons
+	public const float DEGREES = (float)Math.PI / 180f;
 	public static Dictionary<String, int> physicsLayers = new Dictionary<String, int> {
 		{"ground",0},
 		{"test",1}
 	};
-	public static Collider2D? OverlapBox(Vector2 center, Vector2 size, List<String> layers, float angle = 0f, float minDepth = -oof, float maxDepth = oof)
+	public static Collider2D? OverlapBox(Vector2 center, Vector2 size, String layer, float angle = 0f, float minDepth = -oof, float maxDepth = oof)
 	{
-		//TODO
+		GameObject boundingBox = new GameObject();
+		float radius = size.Length()/2;
+		float theta = (float)Math.Atan(size.y/size.x);
+		Vector2 A = new Vector2(center.x + (radius*(float)Math.Cos(theta+angle)), center.y + (radius*(float)Math.Sin(theta+angle)));
+		Vector2 B = new Vector2(center.x + (radius*(float)Math.Cos(theta+(Math.PI-angle))), center.y + (radius*(float)Math.Sin(theta+(Math.PI-angle))));
+		Vector2 C = new Vector2(center.x + (radius*(float)Math.Cos(theta+(Math.PI+angle))), center.y + (radius*(float)Math.Sin(theta+(Math.PI+angle))));
+		Vector2 D = new Vector2(center.x + (radius*(float)Math.Cos(theta+((2*Math.PI)-angle))), center.y + (radius*(float)Math.Sin(theta+((2*Math.PI)-angle))));
+		boundingBox.addUpdater(new PolygonCollider2D(new List<Triangle>{new Triangle(A,B,C), new Triangle(D,B,C)}));
+		foreach(GameObject obj in GameLoop.gameObjects)
+		{
+			if(((obj.physicsLayerMask & (1L << physicsLayers[layer])) != 0) && (obj.transform.position.z >= minDepth && obj.transform.position.z <= maxDepth) && boundingBox.GetComponent<Collider2D>().Collide(obj.GetComponent<Collider2D>()))
+			{
+				return obj.GetComponent<Collider2D>();
+			}
+		}
 		return null;
 	}
 	public static List<Triangle>? Triangulate(List<Vector3> mesh)

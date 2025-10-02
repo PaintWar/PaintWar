@@ -3,10 +3,15 @@ public class Transform
 	public GameObject? gameObject;
 	List<Transform> childTree = new List<Transform>();
 	public int childCount = 0;
-	public Vector3? position;
-	public Vector3? rotation; //quaternions...
-	public Vector3? scale;
-
+	public Vector3 position;
+	public Vector3 rotation; //quaternions...
+	public Vector3 scale;
+	public Transform()
+	{
+		position = new Vector3();
+		rotation = new Vector3();
+		scale = new Vector3(1,1,1);
+	}
 	public void addChild(Transform t)
 	{
 		childTree.Add(t);

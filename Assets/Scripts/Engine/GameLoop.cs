@@ -1,7 +1,7 @@
 using System.Diagnostics;
 public static class GameLoop
 {
-	static List<GameObject> gameObjects = new List<GameObject>();
+	public static List<GameObject> gameObjects = new List<GameObject>();
 
 	public static void globalStart()
 	{

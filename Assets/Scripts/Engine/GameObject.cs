@@ -1,6 +1,6 @@
 public class GameObject
 {
-	Transform transform;
+	public Transform transform;
 	public List<MonoUpdater> updaters = new List<MonoUpdater>();
 	public long physicsLayerMask = 0;
 	public string? tag = null;
