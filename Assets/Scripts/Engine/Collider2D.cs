@@ -19,15 +19,15 @@ public class Collider2D : MonoUpdater
 		{
 			foreach(MonoUpdater upd in gameObject.updaters)
 			{
-				if (!stayingTriggers.Contains(col)) upd.onTriggerEnter2D(col);
-				else upd.onTriggerStay2D(col);
+				if (!stayingTriggers.Contains(col)) upd.OnTriggerEnter2D(col);
+				else upd.OnTriggerStay2D(col);
 			}
 		}
 		foreach (Collider2D col in stayingTriggers)
 		{
 			foreach(MonoUpdater upd in gameObject.updaters)
 			{
-				if (!enteredTriggers.Contains(col)) upd.onTriggerExit2D(col);
+				if (!enteredTriggers.Contains(col)) upd.OnTriggerExit2D(col);
 			}
 		}
 		stayingTriggers.Clear();

@@ -29,7 +29,7 @@ public static class Physics2D
 		}
 		return null;
 	}
-	public static List<Triangle>? Triangulate(List<Vector3> mesh)
+	public static List<Triangle>? Triangulate(List<Vector2> mesh)
 	{
 		//TODO
 		return null;
