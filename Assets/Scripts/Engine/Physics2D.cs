@@ -31,7 +31,18 @@ public static class Physics2D
 	}
 	public static List<Triangle>? Triangulate(List<Vector2> mesh)
 	{
-		//TODO
+		if(mesh.Count < 3)return null;
+		if(mesh.Count == 3)return new List<Triangle>{new Triangle(mesh[0], mesh[1], mesh[2])};
+		for(int i=0; i<mesh.Count; ++i)
+		{
+			if(CrossProduct(mesh[(i+1)%mesh.Count] - mesh[i%mesh.Count], mesh[(i+2)%mesh.Count] - mesh[(i+1)%mesh.Count]) >= 0)
+			{
+				mesh.RemoveAt((i+1)%mesh.Count);
+				List<Triangle>triangles = Triangulate(mesh);
+				triangles.Add(new Triangle(mesh[i%mesh.Count], mesh[(i+1)%mesh.Count], mesh[(i+2)%mesh.Count]));
+				break;
+			}
+		}
 		return null;
 	}
 	public static float DotProduct(Vector3 a, Vector3 b)
