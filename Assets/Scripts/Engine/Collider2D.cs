@@ -17,12 +17,18 @@ public class Collider2D : MonoUpdater
 	{
 		foreach (Collider2D col in enteredTriggers)
 		{
-			if (!stayingTriggers.Contains(col)) onTriggerEnter2D(col);
-			else onTriggerStay2D(col);
+			foreach(MonoUpdater upd in gameObject.updaters)
+			{
+				if (!stayingTriggers.Contains(col)) upd.onTriggerEnter2D(col);
+				else upd.onTriggerStay2D(col);
+			}
 		}
 		foreach (Collider2D col in stayingTriggers)
 		{
-			if (!enteredTriggers.Contains(col)) onTriggerExit2D(col);
+			foreach(MonoUpdater upd in gameObject.updaters)
+			{
+				if (!enteredTriggers.Contains(col)) upd.onTriggerExit2D(col);
+			}
 		}
 		stayingTriggers.Clear();
 		foreach (Collider2D col in enteredTriggers)
@@ -41,17 +47,5 @@ public class Collider2D : MonoUpdater
 			}
 		}
 		return false;
-	}
-	public virtual void onTriggerEnter2D(Collider2D other)
-	{
-
-	}
-	public virtual void onTriggerStay2D(Collider2D other)
-	{
-
-	}
-	public virtual void onTriggerExit2D(Collider2D other)
-	{
-
 	}
 }
