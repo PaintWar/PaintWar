@@ -1,5 +1,6 @@
 public class Match
 {
+    private readonly GameLoop matchLoop = new();
     public string Id { get; }
     public List<Player> Players = new List<Player>();
 
@@ -8,7 +9,12 @@ public class Match
     public Match(Lobby lobby)
     {
         (Id, Players) = (lobby.Id, lobby.Players);
-
+        matchLoop.Start();
+        matchLoop.RunFixedUpdate();
+        foreach (Player player in Players)
+        {
+            player.StartUpdateLoop();
+        }
         for (int y = 0; y < mapHeight; y++)
         {
             var row = new List<Cell>();

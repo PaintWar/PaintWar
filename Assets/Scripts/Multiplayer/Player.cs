@@ -1,5 +1,6 @@
 public class Player
 {
+    private readonly GameLoop playerLoop = new();
     public string PrivateId { get; }
     public string PublicId { get; }
     public string Name { get; }
@@ -7,4 +8,9 @@ public class Player
 
     public Player(string privateId, string publicId, string name, int number)
         => (PrivateId, PublicId, Name, Number) = (privateId, publicId, name, number);
+    public void StartUpdateLoop()
+    {
+        playerLoop.Start();
+        playerLoop.RunUpdate();
+    }
 }
