@@ -2,6 +2,10 @@ import { Camera } from './Camera.js';
 import { InputHandler } from './InputHandler.js';
 import { Renderer } from './Renderer.js';
 import { Cell } from './Cell.js';
+import {NumericTrack} from './NumericTrack.js';
+import {SpriteTrack} from './SpriteTrack.js';
+import {Animation} from './Animation.js';
+import {Animator} from './Animator.js';
 export class Game {
     constructor(canvasWidth = 2, canvasHeight = 2, cellSize = 8) {
         this.canvasWidth = canvasWidth;
@@ -17,6 +21,8 @@ export class Game {
         this.rows;
         this.cols;
         this.cellGrid = [];
+        this.entities = [];
+        this.animators = [];
     }
 
     setNetwork(network) {
@@ -43,6 +49,65 @@ export class Game {
             }
         }
 
+        // Delete after showcasing animations 
+        this.tempFunnctionToShowAnimation();
+        
+    }
+
+    // Delete after showcasing animations 
+    tempFunnctionToShowAnimation() {
+        const block = new PIXI.Graphics();
+        block.beginFill(0xFFAA00);
+        block.drawRect(-25, -25, 50, 50);
+        block.endFill();
+        block.x = 100;
+        block.y = 100;
+        block.scale.set(1, 1);
+        block.rotation = 0;
+
+        this.renderer.entityLayer.addChild(block);
+        this.entities.push(block);
+
+        const moveXTrack = new NumericTrack("x", [
+            { time: 0, value: 100 },
+            { time: 2, value: 400 },
+            { time: 4, value: 100, callback: this.message.bind(this) }
+            ]
+        );
+        const moveYTrack = new NumericTrack("y", [
+            { time: 0, value: 100 },
+            { time: 2, value: 300 },
+            { time: 4, value: 100 }
+            ]
+        );
+        const rotationTrack = new NumericTrack("rotation", [
+            { time: 0, value: 0 },
+            { time: 4, value: Math.PI * 2 }
+        ]
+        );
+        const scaleTrack = new NumericTrack("scale.x", [
+            { time: 0, value: 1 },
+            { time: 2, value: 2 },
+            { time: 4, value: 1 }
+        ]
+        );
+        const scaleYTrack = new NumericTrack("scale.y", scaleTrack.keyframes);
+        const animation = new Animation([moveXTrack, moveYTrack, scaleTrack, scaleYTrack], true);
+        const animation2 = new Animation([rotationTrack], true)
+        const colorTrack = new SpriteTrack("tint", [
+            { time: 0, value: 0xFF0000 },
+            { time: 1, value: 0x00FF00 },
+            { time: 2, value: 0x0000FF },
+            { time: 3, value: 0xFFFF00 },
+            { time: 4, value: 0xFF0000}
+        ]);
+
+        const colorAnim = new Animation([colorTrack], true);
+        const animator = new Animator(block);
+        animator.play(animation);
+        animator.play(animation2)
+        animator.play(colorAnim);
+        this.animators.push(animator);
     }
 
     initialize() {
@@ -54,6 +119,9 @@ export class Game {
     run() {
         this.running = true;
         this.gameLoop();
+    }
+    message() {
+        console.log("finished loop");
     }
 
     gameLoop() {
@@ -68,6 +136,8 @@ export class Game {
 
     update() {
         this.camera.move(this.input.mouseX, this.input.mouseY, this.canvasWidth, this.canvasHeight);
+        const deltaTime = this.renderer.app.ticker.deltaMS / 1000; // seconds
+        this.animators.forEach(animator => animator.update(deltaTime))
         // Send paint request to the server here
         if (this.input.leftMouseDown) {
             const x = this.input.mouseX + this.camera.x;
@@ -88,7 +158,9 @@ export class Game {
             return;
 
         cell.paint(playerId, color);
-
+        const block = new PIXI.Graphics();
+        block.beginFill(color);
+        
         this.renderer.drawCell(cell);
     }
 
