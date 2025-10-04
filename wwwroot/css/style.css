@@ -1,24 +1,10 @@
 @import "menu.css";
+@import "game.css";
+@import "lobby.css";
 
 body {
     margin: 0;
     padding: 0;
     overflow: hidden;
     background-color: grey;
-}
-
-#canvas-container {
-    position: relative;
-    width: 100vw;
-    height: 100vh;
-    overflow: hidden;
-}
-
-#grid-canvas {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    opacity: 0;
 }

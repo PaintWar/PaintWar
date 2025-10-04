@@ -6,7 +6,7 @@ export class InputHandler {
         this.rightMouseDown = false;
         this.lastClick = null;
 
-        document.addEventListener("mousemove", e => {
+        document.addEventListener("mousemove", (e) => {
             if (document.pointerLockElement === canvas) {
                 this.mouseX += e.movementX;
                 this.mouseY += e.movementY;
@@ -21,13 +21,13 @@ export class InputHandler {
             }
         });
 
-        document.addEventListener("mousedown", e => {
+        document.addEventListener("mousedown", (e) => {
             if (e.button === 0) this.leftMouseDown = true;
             if (e.button === 2) this.rightMouseDown = true;
             this.lastClick = { x: this.mouseX, y: this.mouseY, button: e.button };
         });
 
-        document.addEventListener("mouseup", e => {
+        document.addEventListener("mouseup", (e) => {
             if (e.button === 0) this.leftMouseDown = false;
             if (e.button === 2) this.rightMouseDown = false;
         });

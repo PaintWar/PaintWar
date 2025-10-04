@@ -1,21 +1,35 @@
 public static class State
 {
-    public static List<Match> matches = new List<Match>();
+    public static List<Match> Matches { get; } = new List<Match>();
+    public static List<Lobby> Lobbies { get; } = new List<Lobby>();
 
-    public static bool matchExists(string matchId) => matches.Any(m => m.Id == matchId);
+    public static Match? Match(string id) => Matches.FirstOrDefault((match) => match.Id == id);
+    public static Lobby? Lobby(string id) => Lobbies.FirstOrDefault((lobby) => lobby.Id == id);
 
-    public static Match matchGet(string matchId) => matches.FirstOrDefault(m => m.Id == matchId) ?? matchCreate();
+    public static bool MatchExists(string id) => Matches.Any((match) => match.Id == id);
+    public static bool MatchExists(Match match) => MatchExists(match.Id);
+    public static bool LobbyExists(string id) => Lobbies.Any((lobby) => lobby.Id == id);
+    public static bool LobbyExists(Lobby lobby) => LobbyExists(lobby.Id);
 
-    public static Match matchCreate()
+    public static bool? LobbyFull(string id) => Lobby(id)?.Full;
+
+    public static Match StartMatch(Lobby lobby)
     {
-        Match match;
+        Match NewMatch = new Match(lobby);
+        Matches.Add(NewMatch);
+        return NewMatch;
+    }
 
-        do
+    public static Lobby NewLobby()
+    {
+        Lobby NewLobby = new Lobby();
+
+        while (LobbyExists(NewLobby))
         {
-            match = new Match();
-        } while (matches.Contains(match));
+            NewLobby = new Lobby();
+        }
 
-        matches.Add(match);
-        return match;
+        Lobbies.Add(NewLobby);
+        return NewLobby;
     }
 }
