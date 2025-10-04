@@ -24,45 +24,44 @@ Animations usage guide:
 export class Animator {
     constructor(object) {
         this.object = object;
-        this.animations = [];
+        this.animations = new Map();
+        this.currentAnimation = null;
+        this.currentTime = 0;
+        this.currentSpeed = 1.0;
     }
 
-    play(animation, speed = 1.0) {
-        let anim = this.animations.find(a => a.animation === animation);
-        if (anim) {
-            anim.speed = speed;
+    addAnimation(name, animation) {
+        this.animations.set(name, animation);
+    }
+
+    play(name, speed = 1.0) {
+        const animation = this.animations.get(name);
+        if (!animation) {
+            console.warn(`Animation '${name}' not found.`);
             return;
         }
-
-        this.animations.push({ animation, time: 0.0, speed });
-    }
-    remove(animation) {
-        this.animations = this.animations.filter(anim => anim.animation !== animation);
+        this.currentAnimation = animation;
+        this.currentTime = 0;
+        this.currentSpeed = speed;
     }
 
     update(deltaTime) {
-        const stillRunning = [];
-        for (let anim of this.animations) {
-            anim.time += deltaTime * anim.speed;
-            anim.animation.apply(this.object, anim.time);
-            if (anim.animation.loop) {
-                if (anim.time >= anim.animation.duration) {
-                    anim.time %= anim.animation.duration;
-                    anim.animation.tracks.forEach(track => track.lastTime = 0);
-                }
-                stillRunning.push(anim);
-            }
-            else if (anim.time < anim.animation.duration) {
-                stillRunning.push(anim);
+        if (!this.currentAnimation) return;
+        this.currentTime += deltaTime * this.currentSpeed;
+        this.currentAnimation.apply(this.object, this.currentTime);
+
+        if (this.currentAnimation.loop) {
+            if (this.currentTime >= this.currentAnimation.duration) {
+                this.currentTime %= this.currentAnimation.duration;
+                this.currentAnimation.tracks.forEach(track => track.lastTime = 0);
             }
         }
-        this.animations = stillRunning;
+        else if (this.currentTime >= this.currentAnimation.duration) {
+            this.currentAnimation = null;
+        }
     }
     
-    setSpeed(animation, speed) {
-        const anim = this.animations.find(a => a.animation === animation);
-        if (anim) {
-            anim.speed = speed;
-        }
+    setSpeed(speed) {
+        this.currentSpeed = speed;
     }
 }
