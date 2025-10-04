@@ -4,28 +4,43 @@ namespace PaintWar.Hubs
 {
     public class GameHub : Hub
     {
-        public async Task JoinMatch(string matchId)
+        private string? GetGameId()
         {
-            Match match = State.matchGet(matchId);
-            if (match == null) return;
-            match.AddPlayer(new Player(Context.ConnectionId, match.players.Count));
-            await Groups.AddToGroupAsync(Context.ConnectionId, matchId);
-
-            await Clients.Caller.SendAsync("Map", Match.mapWidth, Match.mapHeight, match.Cells);
+            return Context.GetHttpContext()?.Request.Query["game"].ToString();
         }
-        public async Task PaintCell(string matchId, int row, int col)
-        {
-            if (!State.matchExists(matchId)) return;
-            Match match = State.matchGet(matchId);
 
-            Player? player = match.players.FirstOrDefault(p => p.Id == Context.ConnectionId);
+        private string GetGameGroupName()
+        {
+            return "Game-" + GetGameId();
+        }
+
+        override public async Task OnConnectedAsync()
+        {
+            await Groups.AddToGroupAsync(Context.ConnectionId, GetGameGroupName());
+
+            string? id = GetGameId();
+            if (id == null) return;
+
+            Match? match = State.Match(id);
+            if (match == null) return;
+
+            await Clients.Caller.SendAsync("MapInit", Match.mapWidth, Match.mapHeight, match.Cells);
+            await base.OnConnectedAsync();
+        }
+
+        public async Task PaintCell(string matchId, string privateId, int row, int col)
+        {
+            Match? match = State.Match(matchId);
+            if (match == null) return;
+
+            Player? player = match.Player(privateId);
             if (player == null) return;
 
             if (row < 0 || col >= Match.mapWidth || row < 0 || row >= Match.mapHeight) return;
-            if (match.Cells[row][col].OwnerId == player.Id) return;
-            match.Cells[row][col].OwnerId = player.Id;
-            match.Cells[row][col].Color = match.Colors[player.Number];
-            await Clients.Group(matchId).SendAsync("CellUpdated", row, col, player.Id, match.Colors[player.Number]);
+            if (match.Cells[row][col].OwnerId == player.PrivateId) return;
+            match.Cells[row][col].OwnerId = player.PrivateId;
+            match.Cells[row][col].Color = Constants.Colors[player.Number];
+            await Clients.Group(GetGameGroupName()).SendAsync("CellUpdated", row, col, player.PublicId, Constants.Colors[player.Number]);
         }
     }
 }

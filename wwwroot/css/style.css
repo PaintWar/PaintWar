@@ -1,4 +1,6 @@
 @import "menu.css";
+@import "game.css";
+@import "lobby.css";
 
 body {
     margin: 0;

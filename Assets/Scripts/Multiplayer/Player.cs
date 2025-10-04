@@ -1,10 +1,10 @@
 public class Player
 {
-    public string Id { get; set; }
-    public int Number { get; set; }
-    public Player(string id, int number)
-    {
-        this.Id = id;
-        this.Number = number;
-    }
+    public string PrivateId { get; }
+    public string PublicId { get; }
+    public string Name { get; }
+    public int Number { get; }
+
+    public Player(string privateId, string publicId, string name, int number)
+        => (PrivateId, PublicId, Name, Number) = (privateId, publicId, name, number);
 }
