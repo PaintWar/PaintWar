@@ -1,6 +1,5 @@
 export class Animation {
-    constructor(name, tracks, loop = false) {
-        this.name = name;
+    constructor(tracks, loop = false) {
         this.tracks = tracks;
         this.duration = 0;
         this.loop = loop;
