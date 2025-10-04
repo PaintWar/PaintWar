@@ -3,6 +3,7 @@ public class GameLoop
 {
 	private readonly List<GameObject> gameObjects = new List<GameObject>();
     private readonly CancellationTokenSource cts = new();
+    private readonly Time time = new();
     public void AddGameObject(GameObject obj) => gameObjects.Add(obj);
      
 	public void Start()
@@ -12,7 +13,7 @@ public class GameLoop
         g.addUpdater(new ExampleUpdater());
         gameObjects.Add(g);
 
-        Time.previousTime = (float)Stopwatch.GetTimestamp() / (float)TimeSpan.TicksPerMillisecond / 1000f;
+        time.previousTime = (float)Stopwatch.GetTimestamp() / (float)TimeSpan.TicksPerMillisecond / 1000f;
         foreach (GameObject obj in gameObjects)
         {
             foreach (MonoUpdater upd in obj.updaters)
@@ -29,7 +30,7 @@ public class GameLoop
         {
             while (!cts.Token.IsCancellationRequested)
             {
-                Time.getDeltaTime();
+                time.getDeltaTime();
                 float timeNow = (float)Stopwatch.GetTimestamp() / (float)(Stopwatch.Frequency / 1000f); // <-- delete this when rendering works
                 foreach (GameObject obj in gameObjects)
                 {
@@ -39,9 +40,9 @@ public class GameLoop
                     }
                 }
                 float updatedTime = (float)Stopwatch.GetTimestamp() / (float)(Stopwatch.Frequency / 1000f); // <-- delete this when rendering works
-                if (updatedTime - timeNow < Time.fixedDeltaTime * 1000f)                                        //
+                if (updatedTime - timeNow < time.fixedDeltaTime * 1000f)                                        //
                 {                                                                                          //
-                    Thread.Sleep((int)((1000f * Time.fixedDeltaTime) - (updatedTime - timeNow)));          //
+                    Thread.Sleep((int)((1000f * time.fixedDeltaTime) - (updatedTime - timeNow)));          //
                 }     
             }
         }, cts.Token);
@@ -58,7 +59,7 @@ public class GameLoop
                 float updatedTime = (float)Stopwatch.GetTimestamp() / (float)(Stopwatch.Frequency / 1000f);
                 accumulator += (updatedTime - timeNow);
                 timeNow = updatedTime;
-                while(accumulator >= Time.fixedDeltaTime)
+                while(accumulator >= time.fixedDeltaTime)
                 {
                     foreach (GameObject obj in gameObjects)
                     {
@@ -67,10 +68,10 @@ public class GameLoop
                             upd.FixedUpdate();
                         }
                     }
-                    accumulator -= Time.fixedDeltaTime;
+                    accumulator -= time.fixedDeltaTime;
                 }
                 
-                Thread.Sleep((int)(Math.Max(((1000f * Time.fixedDeltaTime) - accumulator), 0)));
+                Thread.Sleep((int)(Math.Max(((1000f * time.fixedDeltaTime) - accumulator), 0)));
             }
         }, cts.Token);
 	}
