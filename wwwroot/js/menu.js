@@ -1,5 +1,6 @@
 import joinLobby from "./lobby.js";
 import Player from "./Player.js";
+import requestAlert from "./alert.js";
 
 var connection = new signalR.HubConnectionBuilder().withUrl("/menuHub").withAutomaticReconnect().build();
 
@@ -113,13 +114,14 @@ connection.on("JoinLobby", (id) => {
 });
 
 connection.on("JoinFailedNonExistentLobby", () => {
-    console.log("Failed to join lobby, no such lobby");
+    const lobbyId = document.getElementById("lobbyIdInput").value.trim();
+    requestAlert(`No lobby found with ID: ${lobbyId}`);
 });
 
 connection.on("JoinFailedMatchInProgress", () => {
-    console.log("Failed to join lobby, match already started");
+    requestAlert("A match is already in progress in this lobby.");
 });
 
 connection.on("JoinFailedLobbyFull", () => {
-    console.log("Failed to join lobby, lobby is full");
+    requestAlert("This lobby is already full.");
 });

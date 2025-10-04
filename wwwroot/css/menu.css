@@ -12,11 +12,19 @@
     text-align: center;
     font-size: 64px;
     font-weight: bold;
-    background: linear-gradient(214deg,rgba(255, 0, 0, 1) 0%, rgba(0, 0, 255, 1) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
     -webkit-text-stroke-color: black;
-    -webkit-text-stroke-width: 2px;
+    -webkit-text-stroke-width: 1px;
+    background: linear-gradient(in hsl longer hue 90deg, red 0 100%);
+    background-clip: text;
+    color: transparent;
+    background-size: 1000% auto;
+    animation: gradient 600s linear infinite;
+}
+
+@keyframes gradient {
+	to {
+		background-position: 1000% center;
+	}
 }
 
 #menu-container input {

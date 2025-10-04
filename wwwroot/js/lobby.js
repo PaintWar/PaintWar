@@ -1,4 +1,5 @@
 import startGame from "./main.js";
+import requestAlert from "./alert.js";
 
 let player;
 
@@ -8,8 +9,6 @@ const playerList = document.getElementById("playerList");
 
 export default function joinLobby(id, p) {
     player = p;
-
-    console.log(globalThis.player);
 
     startGameButton.disabled = true;
     lobbyIdText.textContent = id;
@@ -47,11 +46,11 @@ function setupConnection(connection, id) {
     })
 
     connection.on("FailedNotHost", () => {
-        console.log("Not host");
+        requestAlert("Only the host can start the match.")
     })
 
     connection.on("FailedNotEnoughPlayers", () => {
-        console.log("Not enough players");
+        requestAlert("There aren't enough players to start a match.")
     })
 
     startGameButton.addEventListener("click", (e) => {

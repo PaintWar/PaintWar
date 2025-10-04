@@ -8,3 +8,42 @@ body {
     overflow: hidden;
     background-color: grey;
 }
+
+#canvas-container {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+}
+
+#grid-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+}
+
+#alert-container {
+    position: absolute;
+    display: flex;
+    flex-wrap: wrap-reverse;
+    flex-direction: column-reverse;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none
+}
+
+.alert {
+    display: none;
+    justify-content: center;
+    align-items: center;
+    font-size: 32pt;
+    width: 100vw;
+    height: 10vh;
+    border: black;
+    border-width: 1px;
+    border-style: solid;
+    pointer-events: auto;
+}
