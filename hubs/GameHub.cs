@@ -28,7 +28,12 @@ namespace PaintWar.Hubs
             List<GameObject> gameObjects = match.matchLoop.GetGameObjects();
             foreach (GameObject obj in gameObjects)
             {
-                await Clients.Caller.SendAsync("CreateGameObject", obj.Id, "Example", obj.transform.position?.x, obj.transform.position?.y);   
+                if (obj.type != null)
+                {
+                    var animatorUpdater = obj.GetComponent<AnimatorUpdater>() as AnimatorUpdater;
+                    await Clients.Caller.SendAsync("CreateGameObject", obj.Id, obj.type, obj.transform.position?.x, obj.transform.position?.y, animatorUpdater?.CurrentAnimation);
+                }
+                
             }
             await base.OnConnectedAsync();
         }

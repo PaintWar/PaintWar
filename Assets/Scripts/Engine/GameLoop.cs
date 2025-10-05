@@ -8,11 +8,6 @@ public class GameLoop
     public List<GameObject> GetGameObjects() { return gameObjects; }
 	public void Start()
     {
-        //Example Updater
-        GameObject g = new GameObject();
-        g.addUpdater(new ExampleUpdater());
-        gameObjects.Add(g);
-
         time.previousTime = (float)Stopwatch.GetTimestamp() / (float)TimeSpan.TicksPerMillisecond / 1000f;
         foreach (GameObject obj in gameObjects)
         {

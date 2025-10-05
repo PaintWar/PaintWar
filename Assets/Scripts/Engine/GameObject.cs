@@ -1,6 +1,7 @@
 public class GameObject
 {
     string id;
+    public string? type;
     public string Id => id;
 	public Transform transform;
 	public List<MonoUpdater> updaters = new List<MonoUpdater>();

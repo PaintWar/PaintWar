@@ -12,6 +12,7 @@ public class AnimatorUpdater : MonoUpdater
         this.hubContext = hubContext;
         this.match = match;
     }
+    public string CurrentAnimation => animator.CurrentAnimation;
 
     public override void Update()
     {

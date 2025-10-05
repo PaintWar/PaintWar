@@ -19,6 +19,8 @@ public class Match
         matchLoop.RunFixedUpdate();
         
         SpawnGameObject("Example", new Vector3(100, 100, 0));
+        SpawnGameObject("Example", new Vector3(200, 200, 0));
+        SpawnGameObject("Example", new Vector3(300, 300, 0));
         
         foreach (Player player in Players)
         {
@@ -43,8 +45,10 @@ public class Match
     private void SpawnGameObject(string type, Vector3 position)
     {
         GameObject obj = GameObjectFactory.Create(type, hubContext, this, position);
+        obj.type = type;
         matchLoop.AddGameObject(obj);
-        hubContext.Clients.Group("Game-" + Id).SendAsync("CreateGameObject", obj.Id, type, obj.transform.position?.x, obj.transform.position?.y);
+        var animatorUpdater = obj.GetComponent<AnimatorUpdater>() as AnimatorUpdater;
+        hubContext.Clients.Group("Game-" + Id).SendAsync("CreateGameObject", obj.Id, type, obj.transform.position?.x, obj.transform.position?.y, animatorUpdater?.CurrentAnimation);
     }
 
 }

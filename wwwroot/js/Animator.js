@@ -40,6 +40,9 @@ export class Animator {
             console.warn(`Animation '${name}' not found.`);
             return;
         }
+        if (this.currentAnimation !== null) {
+            this.currentAnimation.apply(this.object, this.currentAnimation.duration);
+        }
         this.currentAnimation = animation;
         this.currentTime = 0;
         this.currentSpeed = speed;

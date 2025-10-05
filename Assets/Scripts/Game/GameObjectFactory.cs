@@ -25,7 +25,6 @@ public static class GameObjectFactory
         obj.addUpdater(new TestObjUpdater());
 
         AnimatorGraph animator = AnimationLibrary.GetAnimator("Example", obj);
-        Console.WriteLine(animator);
         obj.addUpdater(new AnimatorUpdater(animator, hubContext, match));
         return obj;
     }
