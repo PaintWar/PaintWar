@@ -5,7 +5,7 @@ public class GameLoop
     private readonly CancellationTokenSource cts = new();
     private readonly Time time = new();
     public void AddGameObject(GameObject obj) => gameObjects.Add(obj);
-     
+    public List<GameObject> GetGameObjects() { return gameObjects; }
 	public void Start()
     {
         //Example Updater
@@ -51,12 +51,12 @@ public class GameLoop
     public Task RunFixedUpdate()
     {
         return Task.Run(() =>
-        {
+        {   
             float accumulator = 0;
-            float timeNow = (float)Stopwatch.GetTimestamp() / (float)(Stopwatch.Frequency / 1000f);
+            float timeNow = (float)Stopwatch.GetTimestamp() / (float)Stopwatch.Frequency;
             while (!cts.Token.IsCancellationRequested)
             {
-                float updatedTime = (float)Stopwatch.GetTimestamp() / (float)(Stopwatch.Frequency / 1000f);
+                float updatedTime = (float)Stopwatch.GetTimestamp() / (float)Stopwatch.Frequency;
                 accumulator += (updatedTime - timeNow);
                 timeNow = updatedTime;
                 while(accumulator >= time.fixedDeltaTime)
@@ -71,7 +71,7 @@ public class GameLoop
                     accumulator -= time.fixedDeltaTime;
                 }
                 
-                Thread.Sleep((int)(Math.Max(((1000f * time.fixedDeltaTime) - accumulator), 0)));
+                Thread.Sleep((int)(Math.Max(1000 * (time.fixedDeltaTime - accumulator), 0)));
             }
         }, cts.Token);
 	}

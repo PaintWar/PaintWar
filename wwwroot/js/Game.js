@@ -2,10 +2,11 @@ import { Camera } from './Camera.js';
 import { InputHandler } from './InputHandler.js';
 import { Renderer } from './Renderer.js';
 import { Cell } from './Cell.js';
-import {NumericTrack} from './NumericTrack.js';
-import {SpriteTrack} from './SpriteTrack.js';
-import {Animation} from './Animation.js';
-import {Animator} from './Animator.js';
+import { NumericTrack } from './NumericTrack.js';
+import { SpriteTrack } from './SpriteTrack.js';
+import { Animation } from './Animation.js';
+import { Animator } from './Animator.js';
+import { AnimationLibrary } from './AnimationLibrary.js';
 export class Game {
     constructor(canvasWidth = 2, canvasHeight = 2, cellSize = 8) {
         this.canvasWidth = canvasWidth;
@@ -21,7 +22,7 @@ export class Game {
         this.rows;
         this.cols;
         this.cellGrid = [];
-        this.entities = [];
+        this.entities = {};
         this.animators = [];
     }
 
@@ -50,7 +51,7 @@ export class Game {
         }
 
         // Delete after showcasing animations 
-        this.tempFunnctionToShowAnimation();
+        //this.tempFunnctionToShowAnimation();
         
     }
 
@@ -112,6 +113,38 @@ export class Game {
         this.camera = new Camera(window.innerWidth, window.innerHeight);
         this.renderer = new Renderer(this.canvasWidth, this.canvasHeight);
         this.input = new InputHandler(this.renderer.overlayCanvas);
+    }
+
+    addGameObject(id, type, x, y) {
+        if (this.entities[id] != null) {
+            const old = this.entities[id];
+            this.renderer.entityLayer.removeChild(old.sprite);
+            const index = this.animators.indexOf(old.animator);
+            if (index !== -1) {
+                this.animators.splice(index, 1);   
+            }
+            delete this.entities[id];
+        }
+        const sprite = new PIXI.Graphics();
+        sprite.beginFill(0x00AAFF);
+        sprite.drawRect(-25, -25, 50, 50);
+        sprite.endFill();
+        sprite.x = x;
+        sprite.y = y;
+        this.renderer.entityLayer.addChild(sprite);
+        const animations = AnimationLibrary.getAnimations(type);
+        const animator = new Animator(sprite);
+
+        for (const [name, anim] of Object.entries(animations)) {
+            animator.addAnimation(name, anim);
+        }
+        this.entities[id] = { sprite: sprite, animator: animator };
+        this.animators.push(animator);
+    }
+
+    changeAnimation(id, animation) {
+        const animator = this.entities[id].animator;
+        animator.play(animation);
     }
 
     run() {

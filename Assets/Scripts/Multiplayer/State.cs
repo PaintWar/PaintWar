@@ -1,3 +1,6 @@
+using Microsoft.AspNetCore.SignalR;
+using PaintWar.Hubs;
+
 public static class State
 {
     public static List<Match> Matches { get; } = new List<Match>();
@@ -13,9 +16,9 @@ public static class State
 
     public static bool? LobbyFull(string id) => Lobby(id)?.Full;
 
-    public static Match StartMatch(Lobby lobby)
+    public static Match StartMatch(Lobby lobby, IHubContext<GameHub> hubContext)
     {
-        Match NewMatch = new Match(lobby);
+        Match NewMatch = new Match(lobby, hubContext);
         Matches.Add(NewMatch);
         return NewMatch;
     }

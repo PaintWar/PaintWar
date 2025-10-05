@@ -10,6 +10,13 @@ export class GameNetwork {
         this.connection.on("CellUpdated", (x, y, playerId, color) => {
             this.game.paintCell(x, y, playerId, color);
         });
+        this.connection.on("CreateGameObject", (id, type, x, y) => {
+            console.log("Created", id, type, x, y);
+            this.game.addGameObject(id, type, x, y);
+        });
+        this.connection.on("AnimationChanged", (id, animation) => {
+            this.game.changeAnimation(id, animation);
+        });
     }
     paintCell(row, col) {
         return this.connection.invoke("PaintCell", this.matchId, this.player.privateId, row, col);

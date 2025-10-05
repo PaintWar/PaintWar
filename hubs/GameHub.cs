@@ -25,6 +25,11 @@ namespace PaintWar.Hubs
             if (match == null) return;
 
             await Clients.Caller.SendAsync("MapInit", Match.mapWidth, Match.mapHeight, match.Cells);
+            List<GameObject> gameObjects = match.matchLoop.GetGameObjects();
+            foreach (GameObject obj in gameObjects)
+            {
+                await Clients.Caller.SendAsync("CreateGameObject", obj.Id, "Example", obj.transform.position?.x, obj.transform.position?.y);   
+            }
             await base.OnConnectedAsync();
         }
 
