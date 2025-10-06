@@ -2,9 +2,6 @@ import { Camera } from './Camera.js';
 import { InputHandler } from './InputHandler.js';
 import { Renderer } from './Renderer.js';
 import { Cell } from './Cell.js';
-import { NumericTrack } from './NumericTrack.js';
-import { SpriteTrack } from './SpriteTrack.js';
-import { Animation } from './Animation.js';
 import { Animator } from './Animator.js';
 import { AnimationLibrary } from './AnimationLibrary.js';
 export class Game {
@@ -92,7 +89,9 @@ export class Game {
 
     changeAnimation(id, animation) {
         const animator = this.entities[id].animator;
-        animator.play(animation);
+        if (animator !== null) {
+            animator.play(animation);
+        }
     }
 
     run() {
