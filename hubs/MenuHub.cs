@@ -2,23 +2,55 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace PaintWar.Hubs
 {
-    public class MenuHub : Hub
+    public class MenuHub(IWebHostEnvironment env) : Hub
     {
-        public async Task NewMatch()
+        override public async Task OnConnectedAsync()
         {
-            Match match = State.matchCreate();
-            await Clients.Caller.SendAsync("JoinMatch", match.Id);
-        }
-
-        public async Task JoinMatch(String matchId)
-        {
-            if (!State.matchExists(matchId))
+            if (env.IsDevelopment())
             {
-                await Clients.Caller.SendAsync("JoinFailed");
+                await Clients.Caller.SendAsync("Development");
             }
             else
             {
-                await Clients.Caller.SendAsync("JoinMatch", matchId);
+                await Clients.Caller.SendAsync("Production");
+            }
+            await base.OnConnectedAsync();
+        }
+
+        public async Task NewLobby(string privateId, string publicId, string name)
+        {
+            Lobby lobby = State.NewLobby();
+            bool successfullyAddedPlayer = lobby.AddPlayer(privateId, publicId, name, lobby.Players.Count());
+            if (successfullyAddedPlayer)
+            {
+                await Clients.Caller.SendAsync("JoinLobby", lobby.Id);
+            }
+        }
+
+        public async Task JoinLobby(string lobbyId, string privateId, string publicId, string name)
+        {
+            (bool, string)[] state = {
+                (!State.LobbyExists(lobbyId), "JoinFailedNonExistentLobby"),
+                (State.MatchExists(lobbyId), "JoinFailedMatchInProgress"),
+                (State.LobbyFull(lobbyId) ?? true, "JoinFailedLobbyFull")
+            };
+
+            foreach ((bool failed, string message) in state)
+            {
+                if (failed)
+                {
+                    await Clients.Caller.SendAsync(message);
+                    return;
+                }
+            }
+
+            Lobby? lobby = State.Lobby(lobbyId);
+            if (lobby == null) return;
+
+            bool successfullyAddedPlayer = lobby.AddPlayer(privateId, publicId, name, lobby.Players.Count());
+            if (successfullyAddedPlayer)
+            {
+                await Clients.Caller.SendAsync("JoinLobby", lobby.Id);
             }
         }
     }
