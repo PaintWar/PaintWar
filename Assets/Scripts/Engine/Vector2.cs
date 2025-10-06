@@ -2,15 +2,10 @@ public struct Vector2
 {
 	public float x;
 	public float y;
-	public Vector2(float x, float y)
+	public Vector2(float x=0, float y=0)
 	{
 		this.x = x;
 		this.y = y;
-	}
-	public Vector2()
-	{
-		x = 0;
-		y = 0;
 	}
 	public static implicit operator Vector3(Vector2 vec)
 	{
@@ -40,15 +35,15 @@ public struct Vector2
 	{
 		return !(v1==v2);
 	}
-	/*public override bool Equals(object obj)
+	public override bool Equals(object? obj)
 	{
 		if(obj==null)return false;
-		if(obj.GetType()!=typeof(Vector3))return false;
-		Vector2? other = obj as Vector2?;
+		if(obj.GetType()!=typeof(Vector2))return false;
+		Vector2 other = (Vector2)obj;
 		return (x==other.x)&&(y==other.y);
 	}
 	public override int GetHashCode()
 	{
 		return (int)x;
-	}*/
+	}
 }

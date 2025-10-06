@@ -19,19 +19,26 @@ public static class Physics2D
 		Vector2 B = new Vector2(center.x + (radius*(float)Math.Cos(theta+(Math.PI-angle))), center.y + (radius*(float)Math.Sin(theta+(Math.PI-angle))));
 		Vector2 C = new Vector2(center.x + (radius*(float)Math.Cos(theta+(Math.PI+angle))), center.y + (radius*(float)Math.Sin(theta+(Math.PI+angle))));
 		Vector2 D = new Vector2(center.x + (radius*(float)Math.Cos(theta+((2*Math.PI)-angle))), center.y + (radius*(float)Math.Sin(theta+((2*Math.PI)-angle))));
-		boundingBox.addUpdater(new PolygonCollider2D(new List<Triangle>{new Triangle(A,B,C), new Triangle(D,B,C)}));
+		PolygonCollider2D pcol = new PolygonCollider2D(new List<Triangle>{new Triangle(A,B,C), new Triangle(D,B,C)});
+		boundingBox.addUpdater(pcol);
+		#pragma warning disable CS8602, CS8604
 		foreach(GameObject obj in GameLoop.gameObjects)
 		{
-			if(((obj.physicsLayerMask & (1L << physicsLayers[layer])) != 0) && (obj.transform.position.z >= minDepth && obj.transform.position.z <= maxDepth) && boundingBox.GetComponent<Collider2D>().Collide(obj.GetComponent<Collider2D>()))
+			if(((obj.physicsLayerMask & (1L << physicsLayers[layer])) != 0) && (obj.transform.position.z >= minDepth && obj.transform.position.z <= maxDepth) && obj.GetComponent<Collider2D>() && pcol.Collide(obj.GetComponent<Collider2D>()))
 			{
 				return obj.GetComponent<Collider2D>();
 			}
 		}
+		#pragma warning restore CS8602, CS8604
 		return null;
 	}
-	public static List<Triangle>? Triangulate(List<Vector2> mesh)
+	public static List<Triangle> Triangulate(List<Vector2> mesh) //assumes that the points of the polygon are ordered anticlockwise
 	{
-		if(mesh.Count < 3)return null;
+		if(mesh.Count < 3)
+		{
+			Console.WriteLine("ERROR: Failed to triangulate mesh!");
+			return new List<Triangle>();
+		}
 		if(mesh.Count == 3)return new List<Triangle>{new Triangle(mesh[0], mesh[1], mesh[2])};
 		for(int i=0; i<mesh.Count; ++i)
 		{
@@ -40,10 +47,11 @@ public static class Physics2D
 				mesh.RemoveAt((i+1)%mesh.Count);
 				List<Triangle>triangles = Triangulate(mesh);
 				triangles.Add(new Triangle(mesh[i%mesh.Count], mesh[(i+1)%mesh.Count], mesh[(i+2)%mesh.Count]));
-				break;
+				return triangles;
 			}
 		}
-		return null;
+		Console.WriteLine("ERROR: Failed to triangulate mesh!");
+		return new List<Triangle>();
 	}
 	public static float DotProduct(Vector3 a, Vector3 b)
 	{

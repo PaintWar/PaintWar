@@ -15,6 +15,7 @@ public class Collider2D : MonoUpdater
 	}
 	public void processTriggers()
 	{
+		#pragma warning disable CS8602, CS8604
 		foreach (Collider2D col in enteredTriggers)
 		{
 			foreach(MonoUpdater upd in gameObject.updaters)
@@ -30,6 +31,7 @@ public class Collider2D : MonoUpdater
 				if (!enteredTriggers.Contains(col)) upd.OnTriggerExit2D(col);
 			}
 		}
+		#pragma warning restore CS8602, CS8604
 		stayingTriggers.Clear();
 		foreach (Collider2D col in enteredTriggers)
 		{

@@ -3,17 +3,11 @@ public struct Vector3
 	public float x;
 	public float y;
 	public float z;
-	public Vector3(float x, float y, float z)
+	public Vector3(float x=0, float y=0, float z=0)
 	{
 		this.x = x;
 		this.y = y;
 		this.z = z;
-	}
-	public Vector3()
-	{
-		x = 0;
-		y = 0;
-		z = 0;
 	}
 	public static implicit operator Vector2(Vector3 vec)
 	{
@@ -43,15 +37,15 @@ public struct Vector3
 	{
 		return !(v1==v2);
 	}
-	/*public override bool Equals(object obj)
+	public override bool Equals(object? obj)
 	{
 		if(obj==null)return false;
-		if(obj.GetType()!=typeof(Vector3?))return false;
-		Vector3? other = obj as Vector3?;
+		if(obj.GetType()!=typeof(Vector3))return false;
+		Vector3 other = (Vector3)obj;
 		return (x==other.x)&&(y==other.y)&&(z==other.z);
 	}
 	public override int GetHashCode()
 	{
 		return (int)x;
-	}*/
+	}
 }

@@ -6,9 +6,9 @@ public static class GameLoop
 	public static void globalStart()
 	{
 		//Example Updater
-		GameObject g = new GameObject();
+		/*GameObject g = new GameObject();
 		g.addUpdater(new ExampleUpdater());
-		gameObjects.Add(g);
+		gameObjects.Add(g);*/
 
 		Time.previousTime = (float)Stopwatch.GetTimestamp() / (float)TimeSpan.TicksPerMillisecond / 1000f;
 		foreach (GameObject obj in gameObjects)
@@ -60,16 +60,17 @@ public static class GameLoop
 						upd.FixedUpdate();
 					}
 					//if this GameObject has a collider, update its collision mask
-					if (gameObjects[i].GetComponent<Collider2D>())
+					#pragma warning disable CS8602, CS8604
+					Collider2D? col1 = gameObjects[i].GetComponent<Collider2D>();
+					if (col1)
 					{
-						Collider2D col1 = gameObjects[i].GetComponent<Collider2D>();
 						if (col1.isTrigger == false)
 						{
 							for (int j = i + 1; j < gameObjects.Count; ++j)
 							{
-								if (gameObjects[j].GetComponent<Collider2D>() && col1.Collide(gameObjects[j].GetComponent<Collider2D>()))
+								Collider2D? col2 = gameObjects[j].GetComponent<Collider2D>();
+								if (col2 && col1.Collide(col2))
 								{
-									Collider2D col2 = gameObjects[j].GetComponent<Collider2D>();
 									if (col1.isTrigger || col2.isTrigger)
 									{
 										if (col1.isTrigger) col2.enterTrigger(col1);
@@ -90,6 +91,7 @@ public static class GameLoop
 							col1.processTriggers();
 						}
 					}
+					#pragma warning restore CS8602, CS8604
 				}
 				accumulator -= Time.fixedDeltaTime;
 			}

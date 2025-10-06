@@ -35,6 +35,6 @@ public class MonoUpdater
 	}
 	public static implicit operator bool(MonoUpdater? obj)
 	{
-		return obj!=null;
+		return obj is not null;
 	}
 }
