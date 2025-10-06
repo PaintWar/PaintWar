@@ -28,6 +28,7 @@ export class Game {
 
     setNetwork(network) {
         this.network = network;
+        this.network.sendThatReady();
     }
 
     loadMap(mapWidth, mapHeight, cells) {
@@ -49,7 +50,11 @@ export class Game {
                 }
             }
         }
-        this.network.getObjects();
+        for (let entityId in this.entities) {
+            if (!this.renderer.entityLayer.children.includes(this.entities[entityId].sprite)) {
+                this.renderer.entityLayer.addChild(this.entities[entityId].sprite);
+            }
+        }
 
     }
 

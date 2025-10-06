@@ -4,12 +4,6 @@ namespace PaintWar.Hubs
 {
     public class LobbyHub : Hub
     {
-        private readonly IHubContext<GameHub> hubContext;
-
-        public LobbyHub(IHubContext<GameHub> hubContext)
-        {
-            this.hubContext = hubContext;
-        }
         private string? GetLobbyId()
         {
             return Context.GetHttpContext()?.Request.Query["lobby"].ToString();
@@ -57,7 +51,6 @@ namespace PaintWar.Hubs
                 }
             }
 
-            State.StartMatch(lobby, hubContext);
             await Clients.Group(GetLobbyGroupName()).SendAsync("MatchStart");
         }
 
