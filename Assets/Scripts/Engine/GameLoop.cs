@@ -60,16 +60,15 @@ public static class GameLoop
 						upd.FixedUpdate();
 					}
 					//if this GameObject has a collider, update its collision mask
-					#pragma warning disable CS8602, CS8604
 					Collider2D? col1 = gameObjects[i].GetComponent<Collider2D>();
-					if (col1)
+					if (col1!=null)
 					{
 						if (col1.isTrigger == false)
 						{
 							for (int j = i + 1; j < gameObjects.Count; ++j)
 							{
 								Collider2D? col2 = gameObjects[j].GetComponent<Collider2D>();
-								if (col2 && col1.Collide(col2))
+								if (col2!=null && col1.Collide(col2))
 								{
 									if (col1.isTrigger || col2.isTrigger)
 									{
@@ -80,6 +79,7 @@ public static class GameLoop
 									{
 										for (int k = 0; k < Physics2D.MAX_LAYERS; ++k)
 										{
+											if(col1.gameObject==null||col2.gameObject==null)throw new UnassignedBehaviourException();
 											if ((col1.gameObject.physicsLayerMask & (1L << k)) != 0) col2.enterMask |= (1L << k);
 											if ((col2.gameObject.physicsLayerMask & (1L << k)) != 0) col1.enterMask |= (1L << k);
 										}
@@ -91,7 +91,6 @@ public static class GameLoop
 							col1.processTriggers();
 						}
 					}
-					#pragma warning restore CS8602, CS8604
 				}
 				accumulator -= Time.fixedDeltaTime;
 			}

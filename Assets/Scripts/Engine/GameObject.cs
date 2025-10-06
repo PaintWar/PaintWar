@@ -43,7 +43,7 @@ public class GameObject
 	}
 	public static implicit operator bool(GameObject? obj)
 	{
-		return obj is not null;
+		return obj != null;
 	}
 	//TODO: add Instantiate
 	//TODO: add Destroy
