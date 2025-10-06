@@ -8,7 +8,7 @@ import { Animation } from './Animation.js';
 import { Animator } from './Animator.js';
 import { AnimationLibrary } from './AnimationLibrary.js';
 export class Game {
-    constructor(canvasWidth = 2, canvasHeight = 2, cellSize = 8) {
+    constructor(canvasWidth = 2000, canvasHeight = 2000, cellSize = 8) {
         this.canvasWidth = canvasWidth;
         this.canvasHeight = canvasHeight;
         this.cellSize = cellSize;
@@ -49,76 +49,16 @@ export class Game {
                 }
             }
         }
+        this.network.getObjects();
 
-        // Delete after showcasing animations 
-        //this.tempFunnctionToShowAnimation();
-        
-    }
-
-    // Delete after showcasing animations 
-    tempFunnctionToShowAnimation() {
-        const block = new PIXI.Graphics();
-        block.beginFill(0xFFAA00);
-        block.drawRect(-25, -25, 50, 50);
-        block.endFill();
-        block.x = 100;
-        block.y = 100;
-        block.scale.set(1, 1);
-        block.rotation = 0;
-
-        this.renderer.entityLayer.addChild(block);
-        this.entities.push(block);
-
-        const moveXTrack = new NumericTrack("x", [
-            { time: 0, value: 100 },
-            { time: 2, value: 400 },
-            { time: 4, value: 100, callback: this.message.bind(this) }
-            ]
-        );
-        const moveYTrack = new NumericTrack("y", [
-            { time: 0, value: 100 },
-            { time: 2, value: 300 },
-            { time: 4, value: 100 }
-            ]
-        );
-        const rotationTrack = new NumericTrack("rotation", [
-            { time: 0, value: 0 },
-            { time: 4, value: Math.PI * 2 }
-        ]
-        );
-        const scaleTrack = new NumericTrack("scale.x", [
-            { time: 0, value: 1 },
-            { time: 2, value: 2 },
-            { time: 4, value: 1 }
-        ]
-        );
-        const scaleYTrack = new NumericTrack("scale.y", scaleTrack.keyframes);
-        const colorTrack = new SpriteTrack("tint", [
-            { time: 0, value: 0xFF0000 },
-            { time: 1, value: 0x00FF00 },
-            { time: 2, value: 0x0000FF },
-            { time: 3, value: 0xFFFF00 },
-            { time: 4, value: 0xFF0000}
-        ]);
-
-        const animation = new Animation([moveXTrack, moveYTrack, scaleTrack, scaleYTrack, rotationTrack, colorTrack], true);
-        
-        const animator = new Animator(block);
-        animator.addAnimation("Example", animation)
-        animator.play("Example");
-        this.animators.push(animator);
-    }
-
-    initialize() {
-        this.camera = new Camera(window.innerWidth, window.innerHeight);
-        this.renderer = new Renderer(this.canvasWidth, this.canvasHeight);
-        this.input = new InputHandler(this.renderer.overlayCanvas);
     }
 
     addGameObject(id, type, x, y) {
         if (this.entities[id] != null) {
             const old = this.entities[id];
-            this.renderer.entityLayer.removeChild(old.sprite);
+            if (this.renderer.entityLayer !== null) {
+                this.renderer.entityLayer.removeChild(old.sprite);
+            }
             const index = this.animators.indexOf(old.animator);
             if (index !== -1) {
                 this.animators.splice(index, 1);   
@@ -131,7 +71,10 @@ export class Game {
         sprite.endFill();
         sprite.x = x;
         sprite.y = y;
-        this.renderer.entityLayer.addChild(sprite);
+        if (this.renderer.entityLayer !== null) {
+            this.renderer.entityLayer.addChild(sprite);
+        }
+
         const animations = AnimationLibrary.getAnimations(type);
         const animator = new Animator(sprite);
 
@@ -150,9 +93,6 @@ export class Game {
     run() {
         this.running = true;
         this.gameLoop();
-    }
-    message() {
-        console.log("finished loop");
     }
 
     gameLoop() {

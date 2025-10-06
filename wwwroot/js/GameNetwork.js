@@ -18,12 +18,14 @@ export class GameNetwork {
         this.connection.on("AnimationChanged", (id, animation) => {
             this.game.changeAnimation(id, animation);
         });
-        this.connection.on("Test", (number) => {
-            console.log(number);
-        });
+
         
     }
     paintCell(row, col) {
         return this.connection.invoke("PaintCell", this.matchId, this.player.privateId, row, col);
+    }
+
+    getObjects() {
+        return this.connection.invoke("GetAllObjects", this.matchId);
     }
 }

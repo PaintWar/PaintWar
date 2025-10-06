@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.SignalR;
 using PaintWar.Hubs;
-using System.Runtime.Remoting;
 
 public static class GameObjectFactory
 {

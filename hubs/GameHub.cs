@@ -17,15 +17,30 @@ namespace PaintWar.Hubs
         override public async Task OnConnectedAsync()
         {
             await Groups.AddToGroupAsync(Context.ConnectionId, GetGameGroupName());
-
             string? id = GetGameId();
             if (id == null) return;
 
             Match? match = State.Match(id);
             if (match == null) return;
 
+            await base.OnConnectedAsync();
+        }
+        public async Task RequestMap(string matchId)
+        {
+            Match? match = State.Match(matchId);
+            if (match == null) return;
+
             await Clients.Caller.SendAsync("MapInit", Match.mapWidth, Match.mapHeight, match.Cells);
+        }
+
+        public async Task GetAllObjects(string matchId)
+        {
+
+            Match? match = State.Match(matchId);
+            if (match == null) return;
+
             List<GameObject> gameObjects = match.matchLoop.GetGameObjects();
+            Console.WriteLine(gameObjects.Count);
             foreach (GameObject obj in gameObjects)
             {
                 if (obj.type != null)
@@ -33,11 +48,10 @@ namespace PaintWar.Hubs
                     var animatorUpdater = obj.GetComponent<AnimatorUpdater>() as AnimatorUpdater;
                     await Clients.Caller.SendAsync("CreateGameObject", obj.Id, obj.type, obj.transform.position?.x, obj.transform.position?.y, animatorUpdater?.CurrentAnimation);
                 }
-                
-            }
-            await base.OnConnectedAsync();
-        }
 
+            }
+
+        }
         public async Task PaintCell(string matchId, string privateId, int row, int col)
         {
             Match? match = State.Match(matchId);
