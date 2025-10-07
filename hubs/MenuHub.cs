@@ -41,7 +41,7 @@ namespace PaintWar.Hubs
             }
 
             Lobby? lobby = State.Lobby(lobbyId);
-            if (lobby == null) return;
+            if (lobby is null) return;
 
             bool successfullyAddedPlayer = lobby.AddPlayer(privateId, publicId, name);
             if (successfullyAddedPlayer)

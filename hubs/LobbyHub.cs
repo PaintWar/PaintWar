@@ -24,7 +24,7 @@ namespace PaintWar.Hubs
         private async Task UpdateColorState()
         {
             Lobby? lobby = GetLobby();
-            if (lobby == null) return;
+            if (lobby is null) return;
 
             String?[] state = (String?[]) Constants.Colors.Select((_, i) => lobby.Players.FirstOrDefault(player => player.Color == i)?.PublicId).ToArray();
 
@@ -36,19 +36,19 @@ namespace PaintWar.Hubs
             await Groups.AddToGroupAsync(Context.ConnectionId, GetLobbyGroupName());
 
             Lobby? lobby = GetLobby();
-            if (lobby == null) return;
+            if (lobby is null) return;
 
             await UpdateColorState();
             await Clients.Caller.SendAsync("PossibleColors", Constants.Colors);
             await Clients.Group(GetLobbyGroupName()).SendAsync("UpdatePlayerList",
-                                lobby.Players.Select((player) => new { player.PublicId, player.Name, player.Number }));
+                                lobby.Players.Select((player) => new { player.PublicId, player.Name }));
             await base.OnConnectedAsync();
         }
 
         public async Task StartMatch(string playerId)
         {
             Lobby? lobby = GetLobby();
-            if (lobby == null) return;
+            if (lobby is null) return;
 
             (bool, string)[] state = {
                 (playerId != lobby.host?.PrivateId, "FailedNotHost"),
@@ -71,7 +71,7 @@ namespace PaintWar.Hubs
         public async Task ChangeColor(string id, int color)
         {
             Lobby? lobby = GetLobby();
-            if (lobby == null) return;
+            if (lobby is null) return;
 
             Player? player = lobby.Players.FirstOrDefault((player) => player.PrivateId == id);
             if (player is null) return;
