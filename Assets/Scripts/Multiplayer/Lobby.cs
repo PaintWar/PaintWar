@@ -22,4 +22,5 @@ public class Lobby
     }
 
     public bool Full => Players.Count >= Constants.MaximumPlayerCount;
+    public bool ColorTaken(int color) => Players.Any(player => player.Color == color);
 }

@@ -1,8 +1,14 @@
 import startGame from "./main.js";
 import requestAlert from "./alert.js";
+import { colorPopup } from "./popupMenu.js";
 
 let player;
 
+// For color selection popup
+let colors;
+let associatedPlayers;
+
+const colorSelectButton = document.getElementById("colorSelectButton");
 const startGameButton = document.getElementById("startGameButton");
 const lobbyIdText = document.getElementById("lobbyIdText");
 const playerList = document.getElementById("playerList");
@@ -40,22 +46,47 @@ function setupConnection(connection, id) {
         playerList.innerHTML = "";
         players.forEach((p) => {
             var temp = document.createElement("li");
-            temp.innerText = p.name + (p.publicId == player.publicId ? " (YOU)" : "");
+            temp.innerText = p.name;
+            if (p.publicId === player.publicId) {
+                temp.style.textDecoration = "underline";
+                temp.style.fontWeight = "bold";
+            }
             playerList.appendChild(temp);
         });
     })
 
     connection.on("FailedNotHost", () => {
-        requestAlert("Only the host can start the match.")
+        requestAlert("Only the host can start the match.");
     })
 
     connection.on("FailedNotEnoughPlayers", () => {
-        requestAlert("There aren't enough players to start a match.")
+        requestAlert("There aren't enough players to start a match.");
     })
 
     startGameButton.addEventListener("click", (e) => {
         connection.invoke("StartMatch", player.privateId).catch((err) => {
             return console.error(err.toString());
         });
+    })
+
+    connection.on("PossibleColors", (Colors) => {
+        colors = Colors;
+    })
+
+    connection.on("FailedColorTaken", () => {
+        requestAlert("That color is already taken.");
+    })
+
+    connection.on("UpdateColorState", (associatedPlayersUpdated) => {
+        associatedPlayers = associatedPlayersUpdated;
+
+        if (document.getElementById("color-popup-menu") !== null) {
+            colorPopup(connection, player, colors, associatedPlayers);
+        }
+    })
+
+    colorSelectButton.addEventListener("click", (e) => {
+        colorSelectButton.blur();
+        colorPopup(connection, player, colors, associatedPlayers);
     })
 }

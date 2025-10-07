@@ -39,8 +39,8 @@ namespace PaintWar.Hubs
             if (row < 0 || col >= Match.mapWidth || row < 0 || row >= Match.mapHeight) return;
             if (match.Cells[row][col].OwnerId == player.PrivateId) return;
             match.Cells[row][col].OwnerId = player.PrivateId;
-            match.Cells[row][col].Color = Constants.Colors[player.Number];
-            await Clients.Group(GetGameGroupName()).SendAsync("CellUpdated", row, col, player.PublicId, Constants.Colors[player.Number]);
+            match.Cells[row][col].Color = Constants.Colors[player.Color];
+            await Clients.Group(GetGameGroupName()).SendAsync("CellUpdated", row, col, player.PublicId, Constants.Colors[player.Color]);
         }
     }
 }
