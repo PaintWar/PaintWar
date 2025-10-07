@@ -8,7 +8,7 @@ public static class GameLoop
 		//Example Updater
 		GameObject g = new GameObject();
 		g.addUpdater(new ExampleUpdater());
-		// gameObjects.Add(g);
+		gameObjects.Add(g);
 
 		Time.previousTime = (float)Stopwatch.GetTimestamp() / (float)TimeSpan.TicksPerMillisecond / 1000f;
 		foreach (GameObject obj in gameObjects)
@@ -50,7 +50,7 @@ public static class GameLoop
 			float updatedTime = (float)Stopwatch.GetTimestamp() / (float)(Stopwatch.Frequency / 1000f);
 			accumulator += (updatedTime - timeNow);
 			timeNow = updatedTime;
-
+			
 			while(accumulator >= Time.fixedDeltaTime)
 			{
 				foreach (GameObject obj in gameObjects)
@@ -62,7 +62,7 @@ public static class GameLoop
 				}
 				accumulator -= Time.fixedDeltaTime;
 			}
-
+			
 			Thread.Sleep((int)(Math.Max(((1000f * Time.fixedDeltaTime) - accumulator), 0)));
 		}
 	}
