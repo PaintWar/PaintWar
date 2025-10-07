@@ -51,7 +51,7 @@ namespace PaintWar.Hubs
             if (lobby == null) return;
 
             (bool, string)[] state = {
-                (playerId != lobby.Players.First().PrivateId, "FailedNotHost"),
+                (playerId != lobby.host?.PrivateId, "FailedNotHost"),
                 (lobby.Players.Count <= 1, "FailedNotEnoughPlayers")
             };
 
