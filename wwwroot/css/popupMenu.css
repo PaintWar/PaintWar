@@ -6,6 +6,7 @@
     width: 100vw;
     height: 100vh;
     pointer-events: none;
+    z-index: 10;
 }
 
 .popup-menu {
@@ -36,8 +37,8 @@
 
 .color-box {
     display: inline-block;
-    height: 5vh;
-    width: 5vh;
+    height: 3.5rem;
+    width: 3.5rem;
     border-style: solid;
     border-color: #111;
     border-width: 4px;

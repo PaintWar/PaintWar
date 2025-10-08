@@ -1,12 +1,8 @@
 import startGame from "./main.js";
 import requestAlert from "./alert.js";
-import { colorPopup } from "./popupMenu.js";
+import { colorPopup, setColors, setColorState, isPopupActive, clearPopup } from "./popupMenu.js";
 
 let player;
-
-// For color selection popup
-let colors;
-let associatedPlayers;
 
 const colorSelectButton = document.getElementById("colorSelectButton");
 const startGameButton = document.getElementById("startGameButton");
@@ -39,6 +35,7 @@ function setupConnection(connection, id) {
     });
 
     connection.on("MatchStart", () => {
+        clearPopup();
         startGame(id, player);
     })
 
@@ -69,24 +66,25 @@ function setupConnection(connection, id) {
         });
     })
 
-    connection.on("PossibleColors", (Colors) => {
-        colors = Colors;
+    connection.on("PossibleColors", (colors) => {
+        setColors(colors);
     })
 
     connection.on("FailedColorTaken", () => {
         requestAlert("That color is already taken.");
     })
 
-    connection.on("UpdateColorState", (associatedPlayersUpdated) => {
-        associatedPlayers = associatedPlayersUpdated;
+    connection.on("UpdateColorState", (state) => {
+        setColorState(state);
 
-        if (document.getElementById("color-popup-menu") !== null) {
-            colorPopup(connection, player, colors, associatedPlayers);
+        // While connected to the lobby hub, the only popup the player can get is the color popup, so this check is fine
+        if (isPopupActive()) {
+            colorPopup(connection, player);
         }
     })
 
     colorSelectButton.addEventListener("click", (e) => {
         colorSelectButton.blur();
-        colorPopup(connection, player, colors, associatedPlayers);
+        colorPopup(connection, player);
     })
 }
