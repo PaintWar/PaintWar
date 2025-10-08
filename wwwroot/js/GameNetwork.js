@@ -1,9 +1,7 @@
 export class GameNetwork {
-    constructor(connection, matchId, game, player) {
+    constructor(connection, game) {
         this.connection = connection;
-        this.matchId = matchId;
         this.game = game;
-        this.player = player;
         this.connection.on("MapInit", (mapWidth, mapHeight, cells) => {
             this.game.loadMap(mapWidth, mapHeight, cells);
         });
@@ -12,6 +10,6 @@ export class GameNetwork {
         });
     }
     paintCell(row, col) {
-        return this.connection.invoke("PaintCell", this.matchId, this.player.privateId, row, col);
+        return this.connection.invoke("PaintCell", row, col);
     }
 }

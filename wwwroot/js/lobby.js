@@ -1,15 +1,11 @@
 import startGame from "./main.js";
 import requestAlert from "./alert.js";
 
-let player;
-
 const startGameButton = document.getElementById("startGameButton");
 const lobbyIdText = document.getElementById("lobbyIdText");
 const playerList = document.getElementById("playerList");
 
-export default function joinLobby(id, p) {
-    player = p;
-
+export default function joinLobby(id, player) {
     startGameButton.disabled = true;
     lobbyIdText.textContent = id;
 
@@ -21,11 +17,11 @@ export default function joinLobby(id, p) {
     const lobbyContainer = document.getElementById('lobby-container');
     lobbyContainer.style.display = 'flex';
 
-    var connection = new signalR.HubConnectionBuilder().withUrl("/lobbyHub?lobby=" + id).withAutomaticReconnect().build();
-    setupConnection(connection, id);
+    var connection = new signalR.HubConnectionBuilder().withUrl(`/lobbyHub?lobby=${id}&privateId=${player.privateId}`).withAutomaticReconnect().build();
+    setupConnection(connection, id, player);
 }
 
-function setupConnection(connection, id) {
+function setupConnection(connection, id, player) {
     connection.start().then(() => {
         startGameButton.disabled = false;
     }).catch((err) => {
@@ -54,7 +50,7 @@ function setupConnection(connection, id) {
     })
 
     startGameButton.addEventListener("click", (e) => {
-        connection.invoke("StartMatch", player.privateId).catch((err) => {
+        connection.invoke("StartMatch").catch((err) => {
             return console.error(err.toString());
         });
     })

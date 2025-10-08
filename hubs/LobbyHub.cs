@@ -4,24 +4,16 @@ namespace PaintWar.Hubs
 {
     public class LobbyHub : Hub
     {
-        private string? GetLobbyId()
-        {
-            return Context.GetHttpContext()?.Request.Query["lobby"].ToString();
-        }
+        private string GetLobbyId() => Context.GetHttpContext()?.Request.Query["lobby"].ToString() ?? "";
+        private string GetLobbyGroupName() => "Lobby-" + GetLobbyId();
 
-        private string GetLobbyGroupName()
-        {
-            return "Lobby-" + GetLobbyId();
-        }
+        private string GetPrivateId() => Context.GetHttpContext()?.Request.Query["privateId"].ToString() ?? "";
 
         override public async Task OnConnectedAsync()
         {
             await Groups.AddToGroupAsync(Context.ConnectionId, GetLobbyGroupName());
 
-            string? id = GetLobbyId();
-            if (id == null) return;
-
-            Lobby? lobby = State.Lobby(id);
+            Lobby? lobby = State.Lobby(GetLobbyId());
             if (lobby == null) return;
 
             await Clients.Group(GetLobbyGroupName()).SendAsync("UpdatePlayerList",
@@ -29,16 +21,13 @@ namespace PaintWar.Hubs
             await base.OnConnectedAsync();
         }
 
-        public async Task StartMatch(string playerId)
+        public async Task StartMatch()
         {
-            string? id = GetLobbyId();
-            if (id == null) return;
-
-            Lobby? lobby = State.Lobby(id);
+            Lobby? lobby = State.Lobby(GetLobbyId());
             if (lobby == null) return;
 
             (bool, string)[] state = {
-                (playerId != lobby.Players.First().PrivateId, "FailedNotHost"),
+                (GetPrivateId() != lobby.Players.First().PrivateId, "FailedNotHost"),
                 (lobby.Players.Count <= 1, "FailedNotEnoughPlayers")
             };
 

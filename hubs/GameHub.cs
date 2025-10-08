@@ -4,15 +4,10 @@ namespace PaintWar.Hubs
 {
     public class GameHub : Hub
     {
-        private string? GetGameId()
-        {
-            return Context.GetHttpContext()?.Request.Query["game"].ToString();
-        }
+        private string GetGameId() => Context.GetHttpContext()?.Request.Query["game"].ToString() ?? "";
+        private string GetGameGroupName() => "Game-" + GetGameId();
 
-        private string GetGameGroupName()
-        {
-            return "Game-" + GetGameId();
-        }
+        private string GetPrivateId() => Context.GetHttpContext()?.Request.Query["privateId"].ToString() ?? "";
 
         override public async Task OnConnectedAsync()
         {
@@ -28,12 +23,12 @@ namespace PaintWar.Hubs
             await base.OnConnectedAsync();
         }
 
-        public async Task PaintCell(string matchId, string privateId, int row, int col)
+        public async Task PaintCell(int row, int col)
         {
-            Match? match = State.Match(matchId);
+            Match? match = State.Match(GetGameId());
             if (match == null) return;
 
-            Player? player = match.Player(privateId);
+            Player? player = match.Player(GetPrivateId());
             if (player == null) return;
 
             if (row < 0 || col >= Match.mapWidth || row < 0 || row >= Match.mapHeight) return;
