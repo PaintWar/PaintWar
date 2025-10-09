@@ -1,64 +1,106 @@
 const popupMenuContainer = document.getElementById("popup-menu-container");
 
+// General
+var quitHandler;
+var keydownHandlers = [];
+var popup;
+var background;
+
 // LobbyHub related variables
 var colors;
 var associatedPlayers;
 
-export function isPopupActive() {
-    return popupMenuContainer.innerHTML !== "";
-}
-
-export function clearPopup() {
-    popupMenuContainer.innerHTML = "";
-}
-
-export function colorPopup(lobbyConnection, player) {
-    const title = "Color selection";
-    const content = colorContent(lobbyConnection, player);
-    createPopup(title, content);
+export function setColorState(state) {
+    associatedPlayers = state;
 }
 
 export function setColors(c) {
     colors = c;
 }
 
-export function setColorState(state) {
-    associatedPlayers = state;
+export function isPopupActive() {
+    return popupMenuContainer.innerHTML !== "";
+}
+
+export function clearPopup() {
+    if (popup)
+        popup.remove();
+
+    if (background)
+        background.remove();
+
+    if (quitHandler)
+        document.removeEventListener("keydown", quitHandler);
+
+    for (const handler of keydownHandlers)
+        popup.removeEventListener("keydown", handler);
+    keydownHandlers = [];
+
+    popupMenuContainer.innerHTML = "";
+}
+
+export function colorPopup(connection, player) {
+    clearPopup();
+    createPopup("Color selection", colorContent(connection, player));
 }
 
 function createPopup(title, content) {
-    const popup = document.createElement("div");
+    popup = document.createElement("div");
 
-    popup.className = "popup-menu";
+    popup.id = "popup-menu";
     popup.style.display = "flex";
+    popup.tabIndex = "-1";
 
-    const titleElement = document.createElement("h1");
-    titleElement.textContent = title;
+    const header = document.createElement("h1");
+    header.textContent = title;
 
     const footer = document.createElement("h3");
     footer.textContent = "[Q] to close";
 
-    popup.append(titleElement, content, footer);
+    popup.append(header, content, footer);
 
-    document.addEventListener("keydown", (e) => {
+    for (const handler of keydownHandlers)
+        popup.addEventListener("keydown", handler);
+
+    quitHandler = (e) => {
         if (e.key === "q" || e.key === "Q") {
             clearPopup();
-            popup.remove();
             e.preventDefault();
         }
-    });
+    }
 
-    clearPopup();
+    document.addEventListener("keydown", quitHandler);
+
+    createBackground();
     popupMenuContainer.append(popup);
+    popup.focus();
+}
+
+function createBackground() {
+    background = document.createElement("div");
+    background.id = "popup-background";
+    background.addEventListener("click", (e) => {
+        if (background.contains(e.target)) {
+            clearPopup();
+        }
+    })
+    popupMenuContainer.append(background);
 }
 
 function colorContent(connection, player) {
     const content = document.createElement("div");
-    content.id = "color-box-container";
+    content.id = "color-content";
 
     for (let i = 0; i < colors.length; i++) {
+        const div = document.createElement("div");
+        div.className = "color-container";
+
         const span = document.createElement("span");
         span.className = "color-box";
+
+        const num = document.createElement("span");
+        num.innerText = `[${i + 1}]`;
+        num.style.fontWeight = "bold";
 
         const color = colors[i];
         var r = (color >> 16) & 255;
@@ -75,8 +117,10 @@ function colorContent(connection, player) {
         }
 
         clickInvoke(connection, span, ["ChangeColor", player.privateId, i]);
+        keydownInvocationAppend(connection, (i + 1).toString(), ["ChangeColor", player.privateId, i]);
 
-        content.append(span);
+        div.append(span, num);
+        content.append(div);
     }
 
     return content;
@@ -88,4 +132,16 @@ function clickInvoke(connection, element, args) {
             return console.error(err.toString());
         });
     });
+}
+
+function keydownInvocationAppend(connection, key, args) {
+    const handler = (e) => {
+        if (e.key !== key) return;
+
+        connection.invoke(...args).catch((err) => {
+            return console.error(err.toString());
+        });
+    }
+
+    keydownHandlers.push(handler);
 }
