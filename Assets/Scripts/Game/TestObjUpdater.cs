@@ -5,7 +5,8 @@ public class TestObjUpdater : MonoUpdater
     public override void FixedUpdate()
     {
         timeSinceAnimationChange += 0.02f;
-        if (timeSinceAnimationChange >= 4)
+        Console.WriteLine(timeSinceAnimationChange);
+        if (timeSinceAnimationChange >= 0.5)
         {
             timeSinceAnimationChange = 0;
             isWalking = !isWalking;

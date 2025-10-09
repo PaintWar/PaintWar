@@ -1,12 +1,12 @@
 using System.Diagnostics;
 public class GameLoop
 {
-	private readonly List<GameObject> gameObjects = new List<GameObject>();
+    private readonly List<GameObject> gameObjects = new List<GameObject>();
     private readonly CancellationTokenSource cts = new();
     private readonly Time time = new();
     public void AddGameObject(GameObject obj) => gameObjects.Add(obj);
     public List<GameObject> GetGameObjects() { return gameObjects; }
-	public void Start()
+    public void Start()
     {
         time.previousTime = (float)Stopwatch.GetTimestamp() / (float)TimeSpan.TicksPerMillisecond / 1000f;
         foreach (GameObject obj in gameObjects)
@@ -38,7 +38,7 @@ public class GameLoop
                 if (updatedTime - timeNow < time.fixedDeltaTime * 1000f)                                        //
                 {                                                                                          //
                     Thread.Sleep((int)((1000f * time.fixedDeltaTime) - (updatedTime - timeNow)));          //
-                }     
+                }
             }
         }, cts.Token);
     }
@@ -46,16 +46,18 @@ public class GameLoop
     public Task RunFixedUpdate()
     {
         return Task.Run(() =>
-        {   
+        {
             float accumulator = 0;
             float timeNow = (float)Stopwatch.GetTimestamp() / (float)Stopwatch.Frequency;
             while (!cts.Token.IsCancellationRequested)
             {
+                Console.WriteLine("Running fixed update");
                 float updatedTime = (float)Stopwatch.GetTimestamp() / (float)Stopwatch.Frequency;
                 accumulator += (updatedTime - timeNow);
                 timeNow = updatedTime;
-                while(accumulator >= time.fixedDeltaTime)
+                while (accumulator >= time.fixedDeltaTime)
                 {
+                    Console.WriteLine($"Accumulator: {accumulator}, {gameObjects.Count}");
                     foreach (GameObject obj in gameObjects)
                     {
                         foreach (MonoUpdater upd in obj.updaters)
@@ -65,9 +67,10 @@ public class GameLoop
                     }
                     accumulator -= time.fixedDeltaTime;
                 }
-                
+                Console.WriteLine("Finished fixed update loop");
                 Thread.Sleep((int)(Math.Max(1000 * (time.fixedDeltaTime - accumulator), 0)));
             }
+            Console.WriteLine("No longer running fixed update");
         }, cts.Token);
-	}
+    }
 }

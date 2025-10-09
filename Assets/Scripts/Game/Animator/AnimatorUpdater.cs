@@ -20,6 +20,7 @@ public class AnimatorUpdater : MonoUpdater
         animator.Update();
         if (previous != animator.CurrentAnimation)
         {
+            Console.WriteLine("Sent change");
             hubContext.Clients.Group("Game-" + match.Id).SendAsync("AnimationChanged", gameObject!.Id, animator.CurrentAnimation);
         }
     }

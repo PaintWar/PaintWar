@@ -18,17 +18,6 @@ namespace PaintWar.Hubs
         override public async Task OnConnectedAsync()
         {
             await Groups.AddToGroupAsync(Context.ConnectionId, GetGameGroupName());
-            string? id = GetGameId();
-            if (id == null) return;
-
-            Lobby? lobby = State.Lobby(id);
-            if (lobby == null) return;
-
-            Player? player = lobby.Players.FirstOrDefault(p => p.ConnectionId == null);
-            if (player != null)
-            {
-                player.ConnectionId = Context.ConnectionId;
-            }
 
             await base.OnConnectedAsync();
         }
@@ -42,10 +31,27 @@ namespace PaintWar.Hubs
             if (player == null) return;
 
             player.IsReady = true;
-
-            if (lobby.Players.All(p => p.ConnectionId != null && p.IsReady))
+            int readyCount = lobby.Players.Count(p => p.IsReady);
+            int totalCount = lobby.Players.Count;
+            Console.WriteLine($"[{gameId}] Ready players: {readyCount}/{totalCount}");
+            if (lobby.Players.All(p => p.IsReady))
             {
-                State.StartMatch(lobby, Context.GetHttpContext()!.RequestServices.GetRequiredService<IHubContext<GameHub>>());
+                var httpContext = Context.GetHttpContext();
+                if (httpContext == null)
+                {
+                    Console.WriteLine("httpContext is null");
+                    return;
+                }
+
+                var requestServices = httpContext.RequestServices;
+                if (requestServices == null)
+                {
+                    Console.WriteLine("RequestServices is null");
+                    return;
+                }
+                Console.WriteLine("Starting match");
+                State.StartMatch(lobby, requestServices.GetRequiredService<IHubContext<GameHub>>());
+                Console.WriteLine("Match started");
                 await Clients.Group(GetGameGroupName()).SendAsync("GameReady");
             }
         }
