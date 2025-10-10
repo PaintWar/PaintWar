@@ -6,10 +6,6 @@ public static class Physics2D
 	public const float oof = unchecked((1 << 31) - 1);
 	public const float Epsilon = 1e-32f; //uses Equalsf for float equality comparisons
 	public const float DEGREES = (float)Math.PI / 180f;
-	public static Dictionary<String, int> physicsLayers = new Dictionary<String, int> {
-		{"ground",0},
-		{"test",1}
-	};
 	public static Collider2D? OverlapBox(Vector2 center, Vector2 size, String layer, float angle = 0f, float minDepth = -oof, float maxDepth = oof)
 	{
 		GameObject boundingBox = new GameObject();
@@ -21,15 +17,16 @@ public static class Physics2D
 		Vector2 D = new Vector2(center.x + (radius*(float)Math.Cos(theta+((2*Math.PI)-angle))), center.y + (radius*(float)Math.Sin(theta+((2*Math.PI)-angle))));
 		PolygonCollider2D pcol = new PolygonCollider2D(new List<Triangle>{new Triangle(A,B,C), new Triangle(D,B,C)});
 		boundingBox.addUpdater(pcol);
-		#pragma warning disable CS8602, CS8604
+		//#pragma warning disable CS8602, CS8604
 		foreach(GameObject obj in GameLoop.gameObjects)
 		{
-			if(((obj.physicsLayerMask & (1L << physicsLayers[layer])) != 0) && (obj.transform.position.z >= minDepth && obj.transform.position.z <= maxDepth) && obj.GetComponent<Collider2D>() && pcol.Collide(obj.GetComponent<Collider2D>()))
+			Collider2D? col = obj.GetComponent<Collider2D>();
+			if(((obj.physicsLayerMask & (1L << (int)Enum.Parse(typeof(PhysicsLayers),layer))) != 0) && (obj.transform.position.z >= minDepth && obj.transform.position.z <= maxDepth) && col!=null && pcol.Collide(col))
 			{
 				return obj.GetComponent<Collider2D>();
 			}
 		}
-		#pragma warning restore CS8602, CS8604
+		//#pragma warning restore CS8602, CS8604
 		return null;
 	}
 	public static List<Triangle> Triangulate(List<Vector2> mesh) //assumes that the points of the polygon are ordered anticlockwise

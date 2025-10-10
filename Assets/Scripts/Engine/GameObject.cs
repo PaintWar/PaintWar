@@ -27,7 +27,7 @@ public class GameObject
 	}
 	public void setPhysicsLayer(String layer, bool value)
 	{
-		physicsLayerMask = ((value ? 1L : 0L) << Physics2D.physicsLayers[layer]) | (physicsLayerMask ^ (((physicsLayerMask >> Physics2D.physicsLayers[layer]) & 1) << Physics2D.physicsLayers[layer]));
+		physicsLayerMask = ((value ? 1L : 0L) << (int)Enum.Parse(typeof(PhysicsLayers),layer)) | (physicsLayerMask ^ (((physicsLayerMask >> (int)Enum.Parse(typeof(PhysicsLayers),layer)) & 1) << (int)Enum.Parse(typeof(PhysicsLayers),layer)));
 	}
 	public void setPhysicsLayer(int layer, bool value)
 	{
