@@ -51,13 +51,11 @@ public class GameLoop
             float timeNow = (float)Stopwatch.GetTimestamp() / (float)Stopwatch.Frequency;
             while (!cts.Token.IsCancellationRequested)
             {
-                Console.WriteLine("Running fixed update");
                 float updatedTime = (float)Stopwatch.GetTimestamp() / (float)Stopwatch.Frequency;
                 accumulator += (updatedTime - timeNow);
                 timeNow = updatedTime;
                 while (accumulator >= time.fixedDeltaTime)
                 {
-                    Console.WriteLine($"Accumulator: {accumulator}, {gameObjects.Count}");
                     foreach (GameObject obj in gameObjects)
                     {
                         foreach (MonoUpdater upd in obj.updaters)
@@ -67,10 +65,8 @@ public class GameLoop
                     }
                     accumulator -= time.fixedDeltaTime;
                 }
-                Console.WriteLine("Finished fixed update loop");
                 Thread.Sleep((int)(Math.Max(1000 * (time.fixedDeltaTime - accumulator), 0)));
             }
-            Console.WriteLine("No longer running fixed update");
         }, cts.Token);
     }
 }

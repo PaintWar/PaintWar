@@ -15,11 +15,9 @@ export class GameNetwork {
             this.game.changeAnimation(id, animation);
         });
         this.connection.on("AnimationChanged", (id, animation) => {
-            console.log(id);
             this.game.changeAnimation(id, animation);
         });
         this.connection.on("GameReady", () => {
-            console.log("Ready");
             this.connection.invoke("RequestMap", this.matchId);
             game.run();
         });

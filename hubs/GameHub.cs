@@ -33,7 +33,6 @@ namespace PaintWar.Hubs
             player.IsReady = true;
             int readyCount = lobby.Players.Count(p => p.IsReady);
             int totalCount = lobby.Players.Count;
-            Console.WriteLine($"[{gameId}] Ready players: {readyCount}/{totalCount}");
             if (lobby.Players.All(p => p.IsReady))
             {
                 var httpContext = Context.GetHttpContext();
@@ -49,9 +48,7 @@ namespace PaintWar.Hubs
                     Console.WriteLine("RequestServices is null");
                     return;
                 }
-                Console.WriteLine("Starting match");
                 State.StartMatch(lobby, requestServices.GetRequiredService<IHubContext<GameHub>>());
-                Console.WriteLine("Match started");
                 await Clients.Group(GetGameGroupName()).SendAsync("GameReady");
             }
         }

@@ -18,10 +18,8 @@ public static class State
 
     public static Match StartMatch(Lobby lobby, IHubContext<GameHub> hubContext)
     {
-        Console.WriteLine("Creating match");
         Match NewMatch = new Match(lobby, hubContext);
         Matches.Add(NewMatch);
-        Console.WriteLine(Matches.Count);
         return NewMatch;
     }
 

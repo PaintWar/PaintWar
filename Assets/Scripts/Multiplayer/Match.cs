@@ -17,11 +17,9 @@ public class Match
         SpawnGameObject("Example", new Vector3(100, 100, 0));
         SpawnGameObject("Example", new Vector3(200, 200, 0));
         SpawnGameObject("Example", new Vector3(300, 300, 0));
-        Console.WriteLine("Objects spawned");
         matchLoop.Start();
         matchLoop.RunUpdate();
         matchLoop.RunFixedUpdate();
-        Console.WriteLine("Loops started");
         
         for (int y = 0; y < mapHeight; y++)
         {
