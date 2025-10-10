@@ -1,14 +1,14 @@
 using System.Diagnostics;
 public static class GameLoop
 {
-	static List<GameObject> gameObjects = new List<GameObject>();
+	public static List<GameObject> gameObjects = new List<GameObject>();
 
 	public static void globalStart()
 	{
 		//Example Updater
-		GameObject g = new GameObject();
+		/*GameObject g = new GameObject();
 		g.addUpdater(new ExampleUpdater());
-		gameObjects.Add(g);
+		gameObjects.Add(g);*/
 
 		Time.previousTime = (float)Stopwatch.GetTimestamp() / (float)TimeSpan.TicksPerMillisecond / 1000f;
 		foreach (GameObject obj in gameObjects)
@@ -53,11 +53,43 @@ public static class GameLoop
 			
 			while(accumulator >= Time.fixedDeltaTime)
 			{
-				foreach (GameObject obj in gameObjects)
+				for (int i=0; i<gameObjects.Count; ++i)
 				{
-					foreach (MonoUpdater upd in obj.updaters)
+					foreach (MonoUpdater upd in gameObjects[i].updaters)
 					{
 						upd.FixedUpdate();
+					}
+					//if this GameObject has a collider, update its collision mask
+					Collider2D? col1 = gameObjects[i].GetComponent<Collider2D>();
+					if (col1!=null)
+					{
+						if (col1.isTrigger == false)
+						{
+							for (int j = i + 1; j < gameObjects.Count; ++j)
+							{
+								Collider2D? col2 = gameObjects[j].GetComponent<Collider2D>();
+								if (col2!=null && col1.Collide(col2))
+								{
+									if (col1.isTrigger || col2.isTrigger)
+									{
+										if (col1.isTrigger) col2.enterTrigger(col1);
+										if (col2.isTrigger) col1.enterTrigger(col2);
+									}
+									else
+									{
+										for (int k = 0; k < Physics2D.MAX_LAYERS; ++k)
+										{
+											if(col1.gameObject==null||col2.gameObject==null)throw new UnassignedBehaviourException();
+											if ((col1.gameObject.physicsLayerMask & (1L << k)) != 0) col2.enterMask |= (1L << k);
+											if ((col2.gameObject.physicsLayerMask & (1L << k)) != 0) col1.enterMask |= (1L << k);
+										}
+									}
+								}
+							}
+							col1.collisionMask = col1.enterMask;
+							col1.enterMask = 0;
+							col1.processTriggers();
+						}
 					}
 				}
 				accumulator -= Time.fixedDeltaTime;
