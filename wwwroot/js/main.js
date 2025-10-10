@@ -15,12 +15,10 @@ export default function startGame(id, player) {
     enterFullScreen();
 
     game = new Game();
-    //game.initialize();
 
     var connection = new signalR.HubConnectionBuilder().withUrl("/gameHub?game=" + id).withAutomaticReconnect().build();
-    connection.start().then(() => {
+    connection.start().then(async () => {
         game.setNetwork(new GameNetwork(connection, id, game, player));
-        game.run();
     }).catch((err) => {
         return console.error(err.toString());
     });

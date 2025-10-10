@@ -10,6 +10,6 @@ public class ExampleUpdater : MonoUpdater
 	}
 	public override void FixedUpdate()
 	{
-		Console.WriteLine("I run in fixed time intervals, which makes me useful for physics calculations.");
+	    Console.WriteLine("I run in fixed time intervals, which makes me useful for physics calculations.");
 	}
 }

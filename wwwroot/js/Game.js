@@ -2,8 +2,10 @@ import { Camera } from './Camera.js';
 import { InputHandler } from './InputHandler.js';
 import { Renderer } from './Renderer.js';
 import { Cell } from './Cell.js';
+import { Animator } from './Animator.js';
+import { AnimationLibrary } from './AnimationLibrary.js';
 export class Game {
-    constructor(canvasWidth = 2, canvasHeight = 2, cellSize = 8) {
+    constructor(canvasWidth = 2000, canvasHeight = 2000, cellSize = 8) {
         this.canvasWidth = canvasWidth;
         this.canvasHeight = canvasHeight;
         this.cellSize = cellSize;
@@ -17,10 +19,13 @@ export class Game {
         this.rows;
         this.cols;
         this.cellGrid = [];
+        this.entities = {};
+        this.animators = [];
     }
 
     setNetwork(network) {
         this.network = network;
+        this.network.sendThatReady();
     }
 
     loadMap(mapWidth, mapHeight, cells) {
@@ -42,12 +47,51 @@ export class Game {
                 }
             }
         }
+        for (let entityId in this.entities) {
+            if (!this.renderer.entityLayer.children.includes(this.entities[entityId].sprite)) {
+                this.renderer.entityLayer.addChild(this.entities[entityId].sprite);
+            }
+        }
+
     }
 
-    initialize() {
-        this.camera = new Camera(window.innerWidth, window.innerHeight);
-        this.renderer = new Renderer(this.canvasWidth, this.canvasHeight);
-        this.input = new InputHandler(this.renderer.overlayCanvas);
+    addGameObject(id, type, x, y) {
+        if (this.entities[id] != null) {
+            const old = this.entities[id];
+            if (this.renderer.entityLayer !== null) {
+                this.renderer.entityLayer.removeChild(old.sprite);
+            }
+            const index = this.animators.indexOf(old.animator);
+            if (index !== -1) {
+                this.animators.splice(index, 1);   
+            }
+            delete this.entities[id];
+        }
+        const sprite = new PIXI.Graphics();
+        sprite.beginFill(0x00AAFF);
+        sprite.drawRect(-25, -25, 50, 50);
+        sprite.endFill();
+        sprite.x = x;
+        sprite.y = y;
+        if (this.renderer.entityLayer !== null) {
+            this.renderer.entityLayer.addChild(sprite);
+        }
+
+        const animations = AnimationLibrary.getAnimations(type);
+        const animator = new Animator(sprite);
+
+        for (const [name, anim] of Object.entries(animations)) {
+            animator.addAnimation(name, anim);
+        }
+        this.entities[id] = { sprite: sprite, animator: animator };
+        this.animators.push(animator);
+    }
+
+    changeAnimation(id, animation) {
+        const animator = this.entities[id].animator;
+        if (animator !== null) {
+            animator.play(animation);
+        }
     }
 
     run() {
@@ -67,6 +111,8 @@ export class Game {
 
     update() {
         this.camera.move(this.input.mouseX, this.input.mouseY, this.canvasWidth, this.canvasHeight);
+        const deltaTime = this.renderer.app.ticker.deltaMS / 1000; // seconds
+        this.animators.forEach(animator => animator.update(deltaTime))
         // Send paint request to the server here
         if (this.input.leftMouseDown) {
             const x = this.input.mouseX + this.camera.x;
@@ -87,7 +133,9 @@ export class Game {
             return;
 
         cell.paint(playerId, color);
-
+        const block = new PIXI.Graphics();
+        block.beginFill(color);
+        
         this.renderer.drawCell(cell);
     }
 

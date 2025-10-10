@@ -51,7 +51,6 @@ namespace PaintWar.Hubs
                 }
             }
 
-            State.StartMatch(lobby);
             await Clients.Group(GetLobbyGroupName()).SendAsync("MatchStart");
         }
 
