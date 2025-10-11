@@ -20,7 +20,7 @@ public static class State
         return NewMatch;
     }
 
-    public static Lobby NewLobby()
+    public static Lobby NewLobby(string privateId, string publicId, string name)
     {
         Lobby NewLobby = new Lobby();
 
@@ -29,6 +29,7 @@ public static class State
             NewLobby = new Lobby();
         }
 
+        _ = NewLobby.AddPlayer(privateId, publicId, name);
         Lobbies.Add(NewLobby);
         return NewLobby;
     }

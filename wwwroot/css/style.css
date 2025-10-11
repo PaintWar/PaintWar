@@ -1,6 +1,7 @@
 @import "menu.css";
 @import "game.css";
 @import "lobby.css";
+@import "popupMenu.css";
 
 body {
     margin: 0;

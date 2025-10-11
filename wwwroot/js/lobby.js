@@ -1,8 +1,10 @@
 import startGame from "./main.js";
 import requestAlert from "./alert.js";
+import { colorPopup, setColors, setColorState, isPopupActive, clearPopup } from "./popupMenu.js";
 
 let player;
 
+const colorSelectButton = document.getElementById("colorSelectButton");
 const startGameButton = document.getElementById("startGameButton");
 const lobbyIdText = document.getElementById("lobbyIdText");
 const playerList = document.getElementById("playerList");
@@ -33,6 +35,7 @@ function setupConnection(connection, id) {
     });
 
     connection.on("MatchStart", () => {
+        clearPopup();
         startGame(id, player);
     })
 
@@ -40,22 +43,48 @@ function setupConnection(connection, id) {
         playerList.innerHTML = "";
         players.forEach((p) => {
             var temp = document.createElement("li");
-            temp.innerText = p.name + (p.publicId == player.publicId ? " (YOU)" : "");
+            temp.innerText = p.name;
+            if (p.publicId === player.publicId) {
+                temp.style.textDecoration = "underline";
+                temp.style.fontWeight = "bold";
+            }
             playerList.appendChild(temp);
         });
     })
 
     connection.on("FailedNotHost", () => {
-        requestAlert("Only the host can start the match.")
+        requestAlert("Only the host can start the match.");
     })
 
     connection.on("FailedNotEnoughPlayers", () => {
-        requestAlert("There aren't enough players to start a match.")
+        requestAlert("There aren't enough players to start a match.");
     })
 
     startGameButton.addEventListener("click", (e) => {
         connection.invoke("StartMatch", player.privateId).catch((err) => {
             return console.error(err.toString());
         });
+    })
+
+    connection.on("PossibleColors", (colors) => {
+        setColors(colors);
+    })
+
+    connection.on("FailedColorTaken", () => {
+        requestAlert("That color is already taken.");
+    })
+
+    connection.on("UpdateColorState", (state) => {
+        setColorState(state);
+
+        // While connected to the lobby hub, the only popup the player can get is the color popup, so this check is fine
+        if (isPopupActive()) {
+            colorPopup(connection, player);
+        }
+    })
+
+    colorSelectButton.addEventListener("click", (e) => {
+        colorSelectButton.blur();
+        colorPopup(connection, player);
     })
 }

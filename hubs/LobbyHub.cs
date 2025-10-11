@@ -9,36 +9,49 @@ namespace PaintWar.Hubs
             return Context.GetHttpContext()?.Request.Query["lobby"].ToString();
         }
 
+        private Lobby? GetLobby()
+        {
+            string? id = GetLobbyId();
+            if (id is null) return null;
+            return State.Lobby(id);
+        }
+
         private string GetLobbyGroupName()
         {
             return "Lobby-" + GetLobbyId();
+        }
+
+        private async Task UpdateColorState()
+        {
+            Lobby? lobby = GetLobby();
+            if (lobby is null) return;
+
+            String?[] state = (String?[]) Constants.Colors.Select((_, i) => lobby.Players.FirstOrDefault(player => player.Color == i)?.PublicId).ToArray();
+
+            await Clients.Group(GetLobbyGroupName()).SendAsync("UpdateColorState", state);
         }
 
         override public async Task OnConnectedAsync()
         {
             await Groups.AddToGroupAsync(Context.ConnectionId, GetLobbyGroupName());
 
-            string? id = GetLobbyId();
-            if (id == null) return;
+            Lobby? lobby = GetLobby();
+            if (lobby is null) return;
 
-            Lobby? lobby = State.Lobby(id);
-            if (lobby == null) return;
-
+            await UpdateColorState();
+            await Clients.Caller.SendAsync("PossibleColors", Constants.Colors);
             await Clients.Group(GetLobbyGroupName()).SendAsync("UpdatePlayerList",
-                                lobby.Players.Select((player) => new { player.PublicId, player.Name, player.Number }));
+                                lobby.Players.Select((player) => new { player.PublicId, player.Name }));
             await base.OnConnectedAsync();
         }
 
         public async Task StartMatch(string playerId)
         {
-            string? id = GetLobbyId();
-            if (id == null) return;
-
-            Lobby? lobby = State.Lobby(id);
-            if (lobby == null) return;
+            Lobby? lobby = GetLobby();
+            if (lobby is null) return;
 
             (bool, string)[] state = {
-                (playerId != lobby.Players.First().PrivateId, "FailedNotHost"),
+                (playerId != lobby.host?.PrivateId, "FailedNotHost"),
                 (lobby.Players.Count <= 1, "FailedNotEnoughPlayers")
             };
 
@@ -55,6 +68,23 @@ namespace PaintWar.Hubs
             await Clients.Group(GetLobbyGroupName()).SendAsync("MatchStart");
         }
 
-        // Color selection should probably be handled here
+        public async Task ChangeColor(string id, int color)
+        {
+            Lobby? lobby = GetLobby();
+            if (lobby is null) return;
+
+            Player? player = lobby.Players.FirstOrDefault((player) => player.PrivateId == id);
+            if (player is null) return;
+            if (player.Color == color) return;
+
+            if (lobby.ColorTaken(color))
+            {
+                await Clients.Caller.SendAsync("FailedColorTaken");
+                return;
+            }
+
+            player.Color = color;
+            await UpdateColorState();
+        }
     }
 }
